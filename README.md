@@ -16,9 +16,9 @@ To work with this Package is essential observe rules
 
 `` Mandatory ``
 - Step1 Create Controller with methods
-- Step2 Create Migration Table with methods
-- Step3 Create Model with methods
-- Step4 Create Routes with methods or Resource 
+- Step2 Create Migration Table 
+- Step3 Create Model 
+- Step4 Create Routes with methods or Routes::resource or Routes::apiResource 
 
 - Artisan Commands : to add Annotations on your controller you need use command this will generate the Annotations for each Api Method
 
