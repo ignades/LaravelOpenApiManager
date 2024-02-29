@@ -7,13 +7,13 @@ To do a best Documentation to work on a team I think 27/02/2024 to start create 
 
 ## Requirements
 
-To work with this Pacckage is essential observe rules 
+To work with this Package is essential observe rules 
 
-- Use Correct Names of Controllers ans Models this code is based on this logic . 
+- Use Correct Names of Controllers and Models this code is based on this logic . 
 - Example1 Controller ( ProductsController ) Model (Product) OK
 - Example2 Controller ( ProdController ) Model (Products) BAD! 
 - You can use Resources Routes and Personal Routes of your Controller, Only in : dir routes/api.php OK
 
-- Artisan Commands : to add Annotations on you controller you nedd use php artisan app:create-swagl5 this generate the Annotations for each Api Method
+- Artisan Commands : to add Annotations on your controller you need use php artisan app:create-swagl5 this will generate the Annotations for each Api Method
 
-- Thi documentation and code is under Costruction actually work but need more Parameters this will be do from me ;).
+- Thi documentation and code is under Construction actually work but need more Parameters this will be do from me ;).
