@@ -61,33 +61,79 @@ class SwaggerController extends Controller
                         $clean_parameter = preg_replace(array("/}/","/\/\*/","/\/edit/","/\//"), '', $parameter);
                         $this->ParameterType = $this->getColumnType($clean_parameter,$model);
                         //filter methods to get Body
-                            echo $method = ucfirst(strtolower($v->methods()[0]));
+                            $method = ucfirst(strtolower($v->methods()[0]));
+
                             if($method=="Put"){
-                                echo "qui";
-                                $this->RequestBody($method,$model);
+    $parametero.='
+    *      @OA\Parameter(
+    *      in="path",
+    *      name="'.$clean_parameter.'",
+    *      required=true,
+    *      @OA\Schema(type="'.$this->ParameterType.'")
+    *       )';
+
+$body = $this->RequestBody($method,$model);
+$swagger_annotations[$k] ='
+    /**
+    * @OA\\'.ucfirst(strtolower($v->methods()[0])).'(
+    *      path="'.$v->uri().'",
+    *      summary="'.$this->MethodDescription.'",
+    *      description="'.$this->MethodDescription.'",
+    *      @OA\Response(
+    *          response=201,
+    *          description="Register Successfully",
+    *          @OA\JsonContent()
+    *       ),'.$parametero.',
+    *     @OA\RequestBody(
+    *         @OA\JsonContent(),
+    *         @OA\MediaType(
+    *            mediaType="multipart/form-data",
+    *            @OA\Schema(
+    *               type="object",'.$body.'
+    *            ),
+    *        ),
+    *    ),
+    *      @OA\Response(
+    *          response=200,
+    *          description="Register Successfully",
+    *          @OA\JsonContent()
+    *       ),
+    *      @OA\Response(
+    *          response=422,
+    *          description="Unprocessable Entity",
+    *          @OA\JsonContent()
+    *       ),
+    *      @OA\Response(response=400, description="Bad request"),
+    *      @OA\Response(response=404, description="Resource Not Found"),
+    * )
+    */
+    ';
+
+                            }else{
+
+    $parametero.=',
+    *      @OA\Parameter(
+    *      in="path",
+    *      name="'.$clean_parameter.'",
+    *      required=true,
+    *      @OA\Schema(type="'.$this->ParameterType.'")
+    *       )';
+    $swagger_annotations[$k] ='
+    /**
+    * @OA\\'.ucfirst(strtolower($v->methods()[0])).'(
+    *      path="'.$v->uri().'",
+    *      summary="'.$this->MethodDescription.'",
+    *      description="'.$this->MethodDescription.'",
+    *      @OA\Response(
+    *          response=200,
+    *          description="successful operation"
+    *       )'.$parametero.'
+    *     )
+    */
+    ';
                             }
 
-   $parametero.=',
-     *      @OA\Parameter(
-     *      in="path",
-     *      name="'.$clean_parameter.'",
-     *      required=true,
-     *      @OA\Schema(type="'.$this->ParameterType.'")
-     *       )';
-   $swagger_annotations[$k] ='
-    /**
-     * @OA\\'.ucfirst(strtolower($v->methods()[0])).'(
-     *      path="'.$v->uri().'",
-     *      summary="'.$this->MethodDescription.'",
-     *      description="'.$this->MethodDescription.'",
-     *      @OA\Response(
-     *          response=200,
-     *          description="successful operation"
-     *       )'.$parametero.'
-     *     )
-     */
-    ';
-                       }
+                        }
                    }
 
                }else{
@@ -106,7 +152,7 @@ class SwaggerController extends Controller
        }
 
         //write
-        //$this->write_controllers($array_swagger);
+        $this->write_controllers($array_swagger);
 
    }
 
@@ -209,50 +255,68 @@ class SwaggerController extends Controller
 
         $m = 'App\Models\\'.$model;
         $model = new $m();
-        $columns = $model->getTableColumns();
-        var_dump($columns);
-        /**
-         * @OA\Post(
-         * path="/api/register",
-         * operationId="Register",
-         * tags={"Register"},
-         * summary="User Register",
-         * description="User Register here",
-         *     @OA\RequestBody(
-         *         @OA\JsonContent(),
-         *         @OA\MediaType(
-         *            mediaType="multipart/form-data",
-         *            @OA\Schema(
-         *               type="object",
-         *               required={"name","email", "password", "password_confirmation"},
-         *               @OA\Property(property="name", type="text"),
-         *               @OA\Property(property="email", type="text"),
-         *               @OA\Property(property="password", type="password"),
-         *               @OA\Property(property="password_confirmation", type="password")
-         *            ),
-         *        ),
-         *    ),
-         *      @OA\Response(
-         *          response=201,
-         *          description="Register Successfully",
-         *          @OA\JsonContent()
-         *       ),
-         *      @OA\Response(
-         *          response=200,
-         *          description="Register Successfully",
-         *          @OA\JsonContent()
-         *       ),
-         *      @OA\Response(
-         *          response=422,
-         *          description="Unprocessable Entity",
-         *          @OA\JsonContent()
-         *       ),
-         *      @OA\Response(response=400, description="Bad request"),
-         *      @OA\Response(response=404, description="Resource Not Found"),
-         * )
-         */
+        $table = $model->getTable();
+        $columns = Schema::getColumnListing($table);
+        //var_dump($columns);
+        //Definition of Required Parameters in Body to update Product
+        $required='';
+        $properties='';
+        $body='';
+        $num_cols = count($columns);
+        $nline='';
+        $i=0;
+        foreach($columns as $k=>$column_name){
+
+             $type_column = Schema::getColumnType($table,$column_name);
+             $col_type =  $this->mapDataType($type_column);
+             $required .=  '"'.$column_name.'",';
+             if ($i<$num_cols){
+                 $nline="\n";
+             }
+$properties .= '
+    *       @OA\Property(property="'.$column_name.'", type="'.$col_type.'"),'.$nline;
+        $i++;
+        }
+$body .= "
+    *     required={".substr($required , 0, -1)."},"."\n";
+        $body .=$properties;
+
+        $body = preg_replace('/\n\s*\n/', "\n", $body);
+        $str = $body;
+        $out = fopen("out.txt", "w");
+        fwrite($out, $str);
+        fclose($out);
+
+        return $body;
 
     }
+
+    public function mapDataType($column):string {
+
+
+        //Mapping Integration Server Data Types to Swagger Data Types
+        switch ($column) {
+            case "bigint":
+                $type_column =  "integer";
+                break;
+            case "varchar":
+                $type_column =  "string";
+                break;
+            case "text":
+                $type_column =  "text";
+            case "decimal":
+                $type_column =  "number";
+                break;
+            case "int":
+                $type_column =  "integer";
+                break;
+            case "timestamp":
+                $type_column =  "string";
+                break;
+        }
+        return $type_column;
+
+   }
 
 
 

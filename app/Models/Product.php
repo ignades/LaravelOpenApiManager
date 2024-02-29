@@ -13,9 +13,12 @@ class Product extends Model
     protected $dates = [];
 
     protected $fillable = [
+        'id',
         'name',
         'description',
         'stock',
         'price',
+        'created_at',
+        'updated_at',
     ];
 }
