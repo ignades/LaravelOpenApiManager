@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use App\Http\Controllers\ProductsController;
-use ReflectionClass;
+use App\Models\Product;
 
 class SwaggerController extends Controller
 {
+
    public ? string  $ParameterType = null;
+   public ? string  $MethodDescription = null;
    public function getColumns()
    {
        $routeCollection = Route::getRoutes();
@@ -51,42 +53,47 @@ class SwaggerController extends Controller
                    foreach ($count_parameters as $kk =>$parameter){
                         if (preg_match($graffa, $parameter) == true){
 
-                        $clean_parameter = preg_replace(array("/}/","/\//"), '', $parameter);
+                            if (preg_match("/edit/", $parameter) == true) {
+                                $this->MethodDescription = $this->methodDescription("Edit", $model);
+                            }else{
+                                $this->MethodDescription = $this->methodDescription(ucfirst(strtolower($v->methods()[0])), $model);
+                            }
+                        $clean_parameter = preg_replace(array("/}/","/\/\*/","/\/edit/","/\//"), '', $parameter);
                         $this->ParameterType = $this->getColumnType($clean_parameter,$model);
+                        //filter methods to get Body
+                            echo $method = ucfirst(strtolower($v->methods()[0]));
+                            if($method=="Put"){
+                                echo "qui";
+                                $this->RequestBody($method,$model);
+                            }
+
    $parametero.=',
      *      @OA\Parameter(
      *      in="path",
      *      name="'.$clean_parameter.'",
      *      required=true,
-     *      @OA\Schema(type="string")
-     *       )
-    ';
+     *      @OA\Schema(type="'.$this->ParameterType.'")
+     *       )';
    $swagger_annotations[$k] ='
     /**
      * @OA\\'.ucfirst(strtolower($v->methods()[0])).'(
      *      path="'.$v->uri().'",
-     *      summary="Get list of clients",
-     *      description="Returns client detail",
+     *      summary="'.$this->MethodDescription.'",
+     *      description="'.$this->MethodDescription.'",
      *      @OA\Response(
      *          response=200,
      *          description="successful operation"
      *       )'.$parametero.'
      *     )
-     *
      */
     ';
                        }
                    }
 
-
-
                }else{
                    $parameter='';
                    $swagger_annotations[$k]='';
                }
-
-
-
 
                //pushing keys + swagger values
                $patternx = "/$controller/";
@@ -98,10 +105,8 @@ class SwaggerController extends Controller
 
        }
 
-       $this->write_controllers($array_swagger);
-
-       //$columns = Schema::getColumnListing('users');
-
+        //write
+        //$this->write_controllers($array_swagger);
 
    }
 
@@ -160,8 +165,95 @@ class SwaggerController extends Controller
 
    public function getColumnType($parameter,$model):string
    {
+       $m = 'App\Models\\'.$model;
+       $model = new $m();
+       $table = $model->getTable();
 
-       return $columns = Schema::getColumnType('users','name');
+       $columns = Schema::getColumnType($table,$parameter);
+       switch ($columns) {
+           case "bigint":
+                $column = "integer";
+               break;
+           case "varchar":
+                $column = "string";
+               break;
+       }
+       return $column;
+
    }
+
+    public function methodDescription($method,$model):string
+    {
+        switch ($method) {
+            case "Get":
+                $descr = "List $model";
+                break;
+            case "Put":
+                $descr = "Update $model";
+                break;
+            case "Delete":
+                $descr = "Delete $model";
+                break;
+            case "Edit":
+                $descr = "Edit $model";
+                break;
+            default:
+                $descr = "$model";
+
+        }
+        return $descr;
+
+    }
+
+    public function RequestBody($method,$model){
+
+        $m = 'App\Models\\'.$model;
+        $model = new $m();
+        $columns = $model->getTableColumns();
+        var_dump($columns);
+        /**
+         * @OA\Post(
+         * path="/api/register",
+         * operationId="Register",
+         * tags={"Register"},
+         * summary="User Register",
+         * description="User Register here",
+         *     @OA\RequestBody(
+         *         @OA\JsonContent(),
+         *         @OA\MediaType(
+         *            mediaType="multipart/form-data",
+         *            @OA\Schema(
+         *               type="object",
+         *               required={"name","email", "password", "password_confirmation"},
+         *               @OA\Property(property="name", type="text"),
+         *               @OA\Property(property="email", type="text"),
+         *               @OA\Property(property="password", type="password"),
+         *               @OA\Property(property="password_confirmation", type="password")
+         *            ),
+         *        ),
+         *    ),
+         *      @OA\Response(
+         *          response=201,
+         *          description="Register Successfully",
+         *          @OA\JsonContent()
+         *       ),
+         *      @OA\Response(
+         *          response=200,
+         *          description="Register Successfully",
+         *          @OA\JsonContent()
+         *       ),
+         *      @OA\Response(
+         *          response=422,
+         *          description="Unprocessable Entity",
+         *          @OA\JsonContent()
+         *       ),
+         *      @OA\Response(response=400, description="Bad request"),
+         *      @OA\Response(response=404, description="Resource Not Found"),
+         * )
+         */
+
+    }
+
+
 
 }

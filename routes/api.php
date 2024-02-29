@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +24,14 @@ use Illuminate\Support\Facades\Route;
 //Route::post('/comune', [\App\Http\Controllers\ClientsController::class,'searchCity']);
 //
 
-Route::apiResources([
-    'products' => \App\Http\Controllers\ProductsController::class,
-]);
+//Route::apiResource("products", ProductsController::class)
+//    ->parameters(['id' => 'id_product'])
+//    ->only(['show','store','update']);
 
-Route::get('/altro/{id}/{project_id}', [\App\Http\Controllers\ProductsController::class,'myMethod']);
+//Route::Post('/products/{id}', [ProductsController::class,'show']);
+//Route::Put('/products/{id}', [ProductsController::class,'update']);
+
+ Route::resource('prods/id', ProductsController::class);
+
+
+ Route::get('/altro/{id}/{name}', [ProductsController::class,'myMethod']);

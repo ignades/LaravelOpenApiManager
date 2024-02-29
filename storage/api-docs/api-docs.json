@@ -6,18 +6,18 @@
         "version": "1.0.0"
     },
     "paths": {
-        "api/products/{product}": {
+        "api/prods/id/{id}": {
             "get": {
-                "summary": "Get list of clients",
-                "description": "Returns client detail",
-                "operationId": "82e5a19fbceaf52de3ef5e2ec6e99a1c",
+                "summary": "List Product",
+                "description": "List Product",
+                "operationId": "d081523c87d4790d7510585c3c665dd6",
                 "parameters": [
                     {
-                        "name": "product",
+                        "name": "id",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -28,16 +28,16 @@
                 }
             },
             "put": {
-                "summary": "Get list of clients",
-                "description": "Returns client detail",
-                "operationId": "eb2747a3ceb286512af60b523bf933e8",
+                "summary": "Update Product",
+                "description": "Update Product",
+                "operationId": "cf0e4400013fe9369c851319874671ca",
                 "parameters": [
                     {
-                        "name": "product",
+                        "name": "id",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -48,16 +48,16 @@
                 }
             },
             "delete": {
-                "summary": "Get list of clients",
-                "description": "Returns client detail",
-                "operationId": "04a0f69dccb283f8543d65d204dbe447",
+                "summary": "Delete Product",
+                "description": "Delete Product",
+                "operationId": "c915d8999fb9822dfefdc31aac3366c8",
                 "parameters": [
                     {
-                        "name": "product",
+                        "name": "id",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -68,22 +68,44 @@
                 }
             }
         },
-        "api/altro/{id}/{project_id}": {
+        "api/prods/id/{id}/edit": {
             "get": {
-                "summary": "Get list of clients",
-                "description": "Returns client detail",
-                "operationId": "37bf4f728b1aad8172fd1ca2500d62bc",
+                "summary": "Edit Product",
+                "description": "Edit Product",
+                "operationId": "ea942bf5932859ef4857e2e0a3c389f6",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        },
+        "api/altro/{id}/{name}": {
+            "get": {
+                "summary": "List Product",
+                "description": "List Product",
+                "operationId": "7c2bbf19ae1b540311e9a77d459d8971",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
                         }
                     },
                     {
-                        "name": "project_id",
+                        "name": "name",
                         "in": "path",
                         "required": true,
                         "schema": {
