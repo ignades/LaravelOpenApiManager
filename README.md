@@ -14,7 +14,15 @@ To work with this Package is essential observe rules
 - Example2 Controller ( ProdController ) Model (Products) BAD! 
 - You can use Resources Routes and Personal Routes of your Controller, Only in : dir routes/api.php OK
 
-- Artisan Commands : to add Annotations on your controller you need use php artisan app:create-swagl5 this will generate the Annotations for each Api Method
+`` Mandatory ``
+- Step1 Create Controller with methods
+- Step2 Create Migration Table with methods
+- Step3 Create Model with methods
+- Step4 Create Routes with methods or Resource 
+
+- Artisan Commands : to add Annotations on your controller you need use command this will generate the Annotations for each Api Method
+
+- php artisan app:create-swagl5
 
 - Thi documentation and code is under Construction actually work but need more Parameters this will be do from me ;).
 - Mandatory : The parameters passed from Url as follow 
