@@ -8,6 +8,9 @@
     "paths": {
         "api/prods/id/{id}": {
             "get": {
+                "tags": [
+                    "Get Product"
+                ],
                 "summary": "List Product",
                 "description": "List Product",
                 "operationId": "d081523c87d4790d7510585c3c665dd6",
@@ -28,6 +31,9 @@
                 }
             },
             "put": {
+                "tags": [
+                    "Put Product"
+                ],
                 "summary": "Update Product",
                 "description": "Update Product",
                 "operationId": "cf0e4400013fe9369c851319874671ca",
@@ -119,6 +125,9 @@
                 }
             },
             "delete": {
+                "tags": [
+                    "Delete Product"
+                ],
                 "summary": "Delete Product",
                 "description": "Delete Product",
                 "operationId": "c915d8999fb9822dfefdc31aac3366c8",
@@ -141,6 +150,9 @@
         },
         "api/prods/id/{id}/edit": {
             "get": {
+                "tags": [
+                    "Get Product"
+                ],
                 "summary": "Edit Product",
                 "description": "Edit Product",
                 "operationId": "ea942bf5932859ef4857e2e0a3c389f6",
@@ -163,6 +175,9 @@
         },
         "api/altro/{id}/{name}": {
             "get": {
+                "tags": [
+                    "Get Product"
+                ],
                 "summary": "List Product",
                 "description": "List Product",
                 "operationId": "7c2bbf19ae1b540311e9a77d459d8971",

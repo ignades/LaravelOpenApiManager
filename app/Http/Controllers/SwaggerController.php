@@ -74,6 +74,7 @@ $swagger_annotations[$k] ='
     * @OA\\'.ucfirst(strtolower($v->methods()[0])).'(
     *      path="'.$v->uri().'",
     *      summary="'.$this->MethodDescription.'",
+    *      tags={"'.$method.' '.$model.'"},
     *      description="'.$this->MethodDescription.'",
     *      @OA\Response(
     *          response=201,
@@ -119,6 +120,7 @@ $swagger_annotations[$k] ='
     * @OA\\'.ucfirst(strtolower($v->methods()[0])).'(
     *      path="'.$v->uri().'",
     *      summary="'.$this->MethodDescription.'",
+    *      tags={"'.$method.' '.$model.'"},
     *      description="'.$this->MethodDescription.'",
     *      @OA\Response(
     *          response=200,

@@ -23,6 +23,7 @@ class ProductsController extends Controller
     * @OA\Get(
     *      path="api/prods/id/{id}",
     *      summary="List Product",
+    *      tags={"Get Product"},
     *      description="List Product",
     *      @OA\Response(
     *          response=200,
@@ -46,6 +47,7 @@ class ProductsController extends Controller
     * @OA\Get(
     *      path="api/prods/id/{id}/edit",
     *      summary="Edit Product",
+    *      tags={"Get Product"},
     *      description="Edit Product",
     *      @OA\Response(
     *          response=200,
@@ -69,6 +71,7 @@ class ProductsController extends Controller
     * @OA\Put(
     *      path="api/prods/id/{id}",
     *      summary="Update Product",
+    *      tags={"Put Product"},
     *      description="Update Product",
     *      @OA\Response(
     *          response=201,
@@ -88,19 +91,12 @@ class ProductsController extends Controller
     *            @OA\Schema(
     *               type="object",
     *     required={"id","name","description","price","stock","created_at","updated_at"},
-
     *       @OA\Property(property="id", type="integer"),
-
     *       @OA\Property(property="name", type="string"),
-
     *       @OA\Property(property="description", type="text"),
-
     *       @OA\Property(property="price", type="number"),
-
     *       @OA\Property(property="stock", type="integer"),
-
     *       @OA\Property(property="created_at", type="string"),
-
     *       @OA\Property(property="updated_at", type="string"),
 
     *            ),
@@ -130,6 +126,7 @@ class ProductsController extends Controller
     * @OA\Delete(
     *      path="api/prods/id/{id}",
     *      summary="Delete Product",
+    *      tags={"Delete Product"},
     *      description="Delete Product",
     *      @OA\Response(
     *          response=200,
@@ -153,6 +150,7 @@ class ProductsController extends Controller
     * @OA\Get(
     *      path="api/altro/{id}/{name}",
     *      summary="List Product",
+    *      tags={"Get Product"},
     *      description="List Product",
     *      @OA\Response(
     *          response=200,
