@@ -1,0 +1,102 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "User Management API",
+        "description": "This is an example API for users management",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "api/products/{product}": {
+            "get": {
+                "summary": "Get list of clients",
+                "description": "Returns client detail",
+                "operationId": "82e5a19fbceaf52de3ef5e2ec6e99a1c",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Get list of clients",
+                "description": "Returns client detail",
+                "operationId": "eb2747a3ceb286512af60b523bf933e8",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Get list of clients",
+                "description": "Returns client detail",
+                "operationId": "04a0f69dccb283f8543d65d204dbe447",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        },
+        "api/altro/{id}/{project_id}": {
+            "get": {
+                "summary": "Get list of clients",
+                "description": "Returns client detail",
+                "operationId": "37bf4f728b1aad8172fd1ca2500d62bc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        }
+    }
+}
