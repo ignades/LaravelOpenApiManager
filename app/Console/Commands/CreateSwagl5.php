@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Http\Controllers\SwaggerController;
+use Illuminate\Support\Facades\Artisan;
 
 class CreateSwagl5 extends Command
 {
@@ -25,6 +27,14 @@ class CreateSwagl5 extends Command
      */
     public function handle()
     {
-        echo "Ok swagger work!";
+        $swag = new SwaggerController;
+        $res = $swag->generateAnnotations();
+        if ($res==="OK"){
+            $this->info('Annotation created successful!');
+            //REGENERATE JSON
+            Artisan::call('l5-swagger:generate');
+        }else{
+            $this->info('Annotation NOT created!');
+        }
     }
 }

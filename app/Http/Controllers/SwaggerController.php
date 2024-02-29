@@ -12,7 +12,7 @@ class SwaggerController extends Controller
 
    public ? string  $ParameterType = null;
    public ? string  $MethodDescription = null;
-   public function getColumns()
+   public function generateAnnotations()
    {
        $routeCollection = Route::getRoutes();
        //dd($routeCollection);
@@ -151,6 +151,8 @@ $swagger_annotations[$k] ='
 
         //write
         $this->write_controllers($array_swagger);
+
+        return "OK";
 
    }
 

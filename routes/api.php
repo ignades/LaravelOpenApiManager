@@ -35,3 +35,5 @@ use App\Http\Controllers\ProductsController;
 
 
  Route::get('/altro/{id}/{name}', [ProductsController::class,'myMethod']);
+
+ Route::post('/add/product/{id}/{price}', [ProductsController::class,'myMethod']);
