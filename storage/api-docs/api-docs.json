@@ -62,7 +62,7 @@
                                         "type": "string"
                                     },
                                     "description": {
-                                        "type": "number"
+                                        "type": "text"
                                     },
                                     "price": {
                                         "type": "number"

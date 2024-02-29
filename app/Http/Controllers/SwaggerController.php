@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers;
 
-
-use Barryvdh\Debugbar\Facades\Debugbar;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-use App\Http\Controllers\ProductsController;
+
 use App\Models\Product;
 
 class SwaggerController extends Controller
@@ -282,17 +278,12 @@ $body .= "
         $body .=$properties;
 
         $body = preg_replace('/\n\s*\n/', "\n", $body);
-        $str = $body;
-        $out = fopen("out.txt", "w");
-        fwrite($out, $str);
-        fclose($out);
 
         return $body;
 
     }
 
     public function mapDataType($column):string {
-
 
         //Mapping Integration Server Data Types to Swagger Data Types
         switch ($column) {
@@ -304,6 +295,7 @@ $body .= "
                 break;
             case "text":
                 $type_column =  "text";
+                break;
             case "decimal":
                 $type_column =  "number";
                 break;
