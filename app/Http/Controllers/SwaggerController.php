@@ -40,7 +40,7 @@ class SwaggerController extends Controller
         foreach ($routeCollection as $k => $v)
         {
 
-            $this->url = $v->uri();echo "<br>";
+            $this->url = $v->uri();
 
             //Getting Parameters compiled
             $compiledRoute = RouteCompiler::compile(new RouteSymfony($this->url));
@@ -77,27 +77,27 @@ class SwaggerController extends Controller
             }
 
             //CRUD store POST ******************************************************************
-            if($this->method === "store"){
-                if(count($this->methods[$metodo[$k]]["params"]) > 0){
-                    //create annotation swagger parameters
-                    //echo "crea Url parameter if exist";
-                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
-                        $this->parametro = '
-        *      @OA\Parameter(
-        *      in="path",
-        *      name="' . $v2 . '",
-        *      required=true,
-        *      @OA\Schema(type="$v2")
-        *       ),';
-                    }
-                }
-
-                //END Annotation
-                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->RequestBody($this->model) . $this->endAnnotation();
-
-                $this->swagger_annotations[$k]=$data;
-                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
-            }
+//            if($this->method === "store"){
+//                if(count($this->methods[$metodo[$k]]["params"]) > 0){
+//                    //create annotation swagger parameters
+//                    //echo "crea Url parameter if exist";
+//                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
+//                        $this->parametro = '
+//        *      @OA\Parameter(
+//        *      in="path",
+//        *      name="' . $v2 . '",
+//        *      required=true,
+//        *      @OA\Schema(type="$v2")
+//        *       ),';
+//                    }
+//                }
+//
+//                //END Annotation
+//                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->RequestBody($this->model) . $this->endAnnotation();
+//
+//                $this->swagger_annotations[$k]=$data;
+//                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
+//            }
 
 
             //CRUD update PUT/PATCH ******************************************************************
@@ -247,9 +247,10 @@ class SwaggerController extends Controller
 //        }
 
         //write
-        dd($this->array_swagger);
+        //dd($this->array_swagger);
+        //echo json_encode($this->array_swagger);
 
-        //$this->write_controllers($array_swagger);
+        $this->write_controllers($this->array_swagger);
 
         return "OK";
     }
@@ -404,7 +405,7 @@ class SwaggerController extends Controller
 
                $stats = file(dirname(__FILE__).'/'.$k.'.php', FILE_IGNORE_NEW_LINES);
                $offset = $line_number;
-               $valore = (string)$array_swagger[$k][$k2];
+               $valore = $array_swagger[$k][$k2];
                array_splice($stats, $offset-1, 0, $valore);
                file_put_contents($filepathname, join("\n", $stats));
 
