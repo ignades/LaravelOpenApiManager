@@ -31,9 +31,9 @@ use App\Http\Controllers\ProductsController;
 //Route::Post('/products/{id}', [ProductsController::class,'show']);
 //Route::Put('/products/{id}', [ProductsController::class,'update']);
 
- Route::resource('prods/id', ProductsController::class);
+ Route::resource('products', ProductsController::class);
 
-
+//if you need specify type Route::get('contacts/{id:[0-9]+}', 'ContactController@get_contact'); OR Route::get('contacts/{id:[A-Za-z]+}', 'ContactController@get_contact');
  Route::get('/altro/{id}/{name}', [ProductsController::class,'myMethod']);
 
- Route::post('/add/product/{id}/{price}', [ProductsController::class,'myMethod']);
+ Route::post('/add/product/{id}/{price}', [ProductsController::class,'myMethod2']);

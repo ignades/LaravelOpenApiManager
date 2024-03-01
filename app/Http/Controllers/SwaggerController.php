@@ -2,159 +2,363 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-
+use Symfony\Component\Routing\RouteCompiler;
 use App\Models\Product;
+use Symfony\Component\Routing\Route as RouteSymfony;
+use Illuminate\Support\Str;
 
 class SwaggerController extends Controller
 {
 
-   public ? string  $ParameterType = null;
-   public ? string  $MethodDescription = null;
-   public function generateAnnotations()
-   {
-       $routeCollection = Route::getRoutes();
-       //dd($routeCollection);
-
-       $pattern = '/api\//';
-       //get parameters
-       $pattern2 = '/\{/';
-       $graffa = '/}/';
-       //define array swaggers for each controller
-       $array_swagger = array();
-
-       foreach ($routeCollection as $k => $v){
-
-           if (preg_match($pattern, $v->uri()) == true && $k>15) {
-
-               $metodo_cercato =  strpbrk($v->action["uses"], '@');
-
-               $metodo[$k] = str_replace("@",'',$metodo_cercato);
-
-               $find_controller = explode("\\",$v->action["uses"]);
-               //Controller
-               $controller = str_replace($metodo_cercato,'',$find_controller[3]);
-               //Model
-               $model = str_replace("sController",'',$controller);
+    public ?string $ParameterType = null;
+    public ?string $MethodDescription = null;
+    public ?string $parametro = null;
+    public ?string $property = null;
+    public string $url;
+    public array $annotation = [];
+    public array $methods = [];
+    public array $crud_methods = [];
+    public array $swagger_annotations = [];
+    public ?string $method = null;
+    public ?string $model = null;
+    public ?string $controller = null;
+    public array $array_swagger=[];
 
 
-               $parametero='';
-               $swagger_annotations=array();
-               //$parametero=array();
-               if (preg_match($pattern2, $v->uri()) == true) {
+    public function generateAnnotations()
+    {
+        $routeCollection = collect(Route::getRoutes())->filter(function ($route) {
+            return Str::startsWith($route->action['prefix'], 'api');
+        });
+        //dd($routeCollection);
+        //define array swaggers for each controller
+        $array_swagger = array();
 
-                   $count_parameters = explode("{",$v->uri());
+        foreach ($routeCollection as $k => $v)
+        {
 
-                   foreach ($count_parameters as $kk =>$parameter){
-                        if (preg_match($graffa, $parameter) == true){
+            $this->url = $v->uri();echo "<br>";
 
-                            if (preg_match("/edit/", $parameter) == true) {
-                                $this->MethodDescription = $this->methodDescription("Edit", $model);
-                            }else{
-                                $this->MethodDescription = $this->methodDescription(ucfirst(strtolower($v->methods()[0])), $model);
-                            }
-                        $clean_parameter = preg_replace(array("/}/","/\/\*/","/\/edit/","/\//"), '', $parameter);
-                        $this->ParameterType = $this->getColumnType($clean_parameter,$model);
-                        //filter methods to get Body
-                            $method = ucfirst(strtolower($v->methods()[0]));
+            //Getting Parameters compiled
+            $compiledRoute = RouteCompiler::compile(new RouteSymfony($this->url));
 
-                            if($method=="Put"){
-    $parametero.='
-    *      @OA\Parameter(
-    *      in="path",
-    *      name="'.$clean_parameter.'",
-    *      required=true,
-    *      @OA\Schema(type="'.$this->ParameterType.'")
-    *       )';
+            $metodo_cercato = strpbrk($v->action["uses"], '@');
 
-$body = $this->RequestBody($method,$model);
-$swagger_annotations[$k] ='
-    /**
-    * @OA\\'.ucfirst(strtolower($v->methods()[0])).'(
-    *      path="'.$v->uri().'",
-    *      summary="'.$this->MethodDescription.'",
-    *      tags={"'.$method.' '.$model.'"},
-    *      description="'.$this->MethodDescription.'",
-    *      @OA\Response(
-    *          response=201,
-    *          description="Register Successfully",
-    *          @OA\JsonContent()
-    *       ),'.$parametero.',
-    *     @OA\RequestBody(
-    *         @OA\JsonContent(),
-    *         @OA\MediaType(
-    *            mediaType="multipart/form-data",
-    *            @OA\Schema(
-    *               type="object",'.$body.'
-    *            ),
-    *        ),
-    *    ),
-    *      @OA\Response(
-    *          response=200,
-    *          description="Register Successfully",
-    *          @OA\JsonContent()
-    *       ),
-    *      @OA\Response(
-    *          response=422,
-    *          description="Unprocessable Entity",
-    *          @OA\JsonContent()
-    *       ),
-    *      @OA\Response(response=400, description="Bad request"),
-    *      @OA\Response(response=404, description="Resource Not Found"),
-    * )
-    */
-    ';
+            $metodo[$k] = str_replace("@", '', $metodo_cercato);
 
-                            }else{
+            //echo $metodo[$k]."<br>";
+            $find_controller = explode("\\", $v->action["uses"]);
 
-    $parametero.=',
-    *      @OA\Parameter(
-    *      in="path",
-    *      name="'.$clean_parameter.'",
-    *      required=true,
-    *      @OA\Schema(type="'.$this->ParameterType.'")
-    *       )';
-    $swagger_annotations[$k] ='
-    /**
-    * @OA\\'.ucfirst(strtolower($v->methods()[0])).'(
-    *      path="'.$v->uri().'",
-    *      summary="'.$this->MethodDescription.'",
-    *      tags={"'.$method.' '.$model.'"},
-    *      description="'.$this->MethodDescription.'",
-    *      @OA\Response(
-    *          response=200,
-    *          description="successful operation"
-    *       )'.$parametero.'
-    *     )
-    */
-    ';
-                            }
+            //Controller
+            $this->controller = str_replace($metodo_cercato, '', $find_controller[3]);
 
+            //model
+            $this->model = str_replace("sController", '', $this->controller);
+
+            //Define swagger
+            $swagger_annotations[$this->controller]='';
+
+            //CRUD Methods
+            $this->crud_method[$k] = ucfirst(strtolower($v->methods()[0]));
+
+            $this->method = $metodo[$k];
+            $this->methods[$metodo[$k]]["params"] =  $compiledRoute->getVariables();
+            $this->methods[$metodo[$k]]["crudo"] = $this->crud_method[$k];
+
+            //CRUD index GET
+            if($this->method === "index"){
+
+                $stringa = $this->indexAnnotation($this->url,$this->model);
+
+                $this->swagger_annotations[$k]=$stringa;
+            }
+
+            //CRUD store POST ******************************************************************
+            if($this->method === "store"){
+                if(count($this->methods[$metodo[$k]]["params"]) > 0){
+                    //create annotation swagger parameters
+                    //echo "crea Url parameter if exist";
+                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
+                        $this->parametro = '
+        *      @OA\Parameter(
+        *      in="path",
+        *      name="' . $v2 . '",
+        *      required=true,
+        *      @OA\Schema(type="$v2")
+        *       ),';
+                    }
+                }
+
+                //END Annotation
+                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->RequestBody($this->model) . $this->endAnnotation();
+
+                $this->swagger_annotations[$k]=$data;
+                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
+            }
+
+
+            //CRUD update PUT/PATCH ******************************************************************
+            if($this->method === "update"){
+
+                if(count($this->methods[$metodo[$k]]["params"]) > 0){
+                    //create annotation swagger parameters
+                    //echo "crea Url parameter if exist";
+                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
+                        $this->parametro = '
+        *      @OA\Parameter(
+        *      in="path",
+        *      name="' . $v2 . '",
+        *      required=true,
+        *      @OA\Schema(type="$v2")
+        *       ),';
+                    }
+                }
+
+                //END Annotation
+                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->RequestBody($this->model) . $this->endAnnotation();
+
+                $this->swagger_annotations[$k]=$data;
+                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
+            }
+
+
+            //CRUD show PUT/PATCH ******************************************************************
+            if($this->method === "show"){
+
+                //Start Annotation
+                if(count($this->methods[$metodo[$k]]["params"]) > 0){
+                    //create annotation swagger parameters
+                    //echo "crea Url parameter if exist";
+                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
+                        $this->parametro = '
+        *      @OA\Parameter(
+        *      in="path",
+        *      name="' . $v2 . '",
+        *      required=true,
+        *      @OA\Schema(type="$v2")
+        *       ),';
+
+                    }
+                }
+                //END Annotation
+                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->endAnnotation();
+
+                $this->swagger_annotations[$k]=$data;
+                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
+            }
+            //CRUD edit POST {id}
+            if($this->method === "edit"){
+                //Start Annotation
+                if(count($this->methods[$metodo[$k]]["params"]) > 0){
+                    //create annotation swagger parameters
+                    //echo "crea Url parameter if exist";
+                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
+                        $this->parametro = '
+        *      @OA\Parameter(
+        *      in="path",
+        *      name="' . $v2 . '",
+        *      required=true,
+        *      @OA\Schema(type="$v2")
+        *       ),';
+                    }
+                }
+                //END Annotation
+                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->endAnnotation();
+
+                $this->swagger_annotations[$k]=$data;
+                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
+            }
+            //CRUD DELETE  {id} ******************************************************************
+            if($this->method === "destroy"){
+
+                if(count($this->methods[$this->method]["params"]) > 0){
+                    //create annotation swagger parameters
+                    $parametro='';
+                    //echo "crea Url parameter if exist";
+                    foreach($this->methods[$this->method]["params"] as $v2){
+                        if($this->method !== strtolower($this->model)){
+                            $v2='id';
+                            $this->ParameterType = $this->getColumnType($v2,$this->model);
+                            $parametro .= '
+        *      @OA\Parameter(
+        *      in="path",
+        *      name="'.$v2.'",
+        *      required=true,
+        *      @OA\Schema(type="' . $this->ParameterType . '")
+        *       ),';
+                        }else{
+                            $this->ParameterType = $this->getColumnType($v2,$this->model);
+                            $parametro .= '
+        *      @OA\Parameter(
+        *      in="path",
+        *      name="'.$v2.'",
+        *      required=true,
+        *      @OA\Schema(type="' . $this->ParameterType . '")
+        *       ),';
                         }
-                   }
 
-               }else{
-                   $parameter='';
-                   $swagger_annotations[$k]='';
-               }
+                    }
+                }
+                //END Annotation
+                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $parametro . $this->endAnnotation();
 
-               //pushing keys + swagger values
-               $patternx = "/$controller/";
-               if (preg_match($patternx, $v->action["uses"]) == true){
-                   $array_swagger[$controller][$metodo[$k]] = $swagger_annotations[$k];
-               }
+                $this->swagger_annotations[$k]=$data;
+                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
+            }
+            // Others personal Methods
+            if($this->method !== "index" &&  $this->method !== "create" && $this->method !== "store" && $this->method !== "show" && $this->method !== "edit" && $this->method !== "update" && $this->method !== "destroy")
+            {
+                //Start Annotation
+                if(count($this->methods[$this->method]["params"]) > 0){
+                    //create annotation swagger parameters
+                    $parametro='';
+                    //echo "crea Url parameter if exist";
+                    foreach($this->methods[$this->method]["params"] as $v2){
+                        if($this->method !== strtolower($this->model))
+                            $parametro .= '
+        *      @OA\Parameter(
+        *      in="path",
+        *      name="' . $v2 . '",
+        *      required=true,
+        *      @OA\Schema(type="$v2")
+        *       ),';
 
-           }
+                    }
+                    //END Annotation
+                    $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $parametro . $this->endAnnotation();
 
-       }
+                    $this->swagger_annotations[$k]=$data;
+                }
+                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
+            }
+
+         }
+
+
+
+
+
+//        $patternx = "/$this->controller/";
+//        if (preg_match($patternx, $v->action["uses"]) == true){
+//            $this->array_swagger[$this->controller][$this->method] = $this->swagger_annotations;
+//        }
 
         //write
-        $this->write_controllers($array_swagger);
+        dd($this->array_swagger);
+
+        //$this->write_controllers($array_swagger);
 
         return "OK";
+    }
 
-   }
+
+     public function indexAnnotation($url,$model):string {
+         $stringa = '
+        /**
+        * @OA\Get(
+        *      path="'.$url.'",
+        *      summary="List '.$model.'",
+        *      tags={"show '.$model.'"},
+        *      description="List '.$model.'",
+        *      @OA\Response(
+        *          response=200,
+        *          description="successful operation"
+        *       ),
+        *      @OA\Response(
+        *          response=200,
+        *          description="Register Successfully",
+        *          @OA\JsonContent()
+        *       ),
+        *      @OA\Response(
+        *          response=404,
+        *          description="Result Not Found",
+        *          @OA\JsonContent()
+        *       ),
+        *      @OA\Response(response=400, description="Bad request"),
+        *      @OA\Response(response=404, description="Resource Not Found"),
+        * )
+        */
+        */';
+         return $stringa;
+     }
+
+    public function startAnnotation($method,$crud_method, $model,$url_api):string{
+
+        $this->MethodDescription = $this->methodDescription($crud_method, $model);
+        $start = '
+        /**
+        * @OA\\'.$crud_method.'(
+        *      path="'.$url_api.'",
+        *      summary="'.$this->MethodDescription.'",
+        *      description="'.$method.' ' .$this->MethodDescription.'",
+        *      @OA\Response(
+        *          response=201,
+        *          description="Register Successfully",
+        *          @OA\JsonContent()
+        *       ),';
+        return $start;
+    }
+
+    public function endAnnotation():string
+    {
+        $end='
+        *      @OA\Response(
+        *          response=201,
+        *          description="Register Successfully",
+        *          @OA\JsonContent()
+        *       ),
+        *      @OA\Response(
+        *          response=200,
+        *          description="Register Successfully",
+        *          @OA\JsonContent()
+        *       ),
+        *      @OA\Response(
+        *          response=422,
+        *          description="Unprocessable Entity",
+        *          @OA\JsonContent()
+        *       ),
+        *      @OA\Response(response=400, description="Bad request"),
+        *      @OA\Response(response=404, description="Resource Not Found"),
+        * )
+        */
+        ';
+        return $end;
+    }
+
+    public function urlParameter():string {
+
+        //$column_type = $this->getColumnType($this->parametro,$model);
+        $column_type = gettype($this->property);
+        $this->parametro .= '
+        *      @OA\Parameter(
+        *      in="path",
+        *      name="' . $this->property . '",
+        *      required=true,
+        *      @OA\Schema(type="'.$column_type.'")
+        *       ),';
+        return $this->parametro;
+    }
+
+    public function extra_methods($method,$crud_method,$model,$url):string{
+        $stringa = '';
+        //Start Annotation
+        $stringa .= $this->startAnnotation($method,$crud_method, $model,$url);
+
+        if(count($this->methods[$method]["params"]) > 0){
+            //create annotation swagger parameters
+            //echo "crea Url parameter if exist";
+            foreach($this->methods[$method]["params"] as $v2){
+                $this->property = $v2;
+                $stringa .= $this->urlParameter($this->model);
+            }
+        }
+        //END Annotation
+        $stringa .= $this->endAnnotation();
+        return $stringa;
+    }
 
    public function write_controllers($array_swagger){
 
@@ -215,16 +419,28 @@ $swagger_annotations[$k] ='
        $model = new $m();
        $table = $model->getTable();
 
-       $columns = Schema::getColumnType($table,$parameter);
-       switch ($columns) {
+       $column = Schema::getColumnType($table,$parameter);
+       switch ($column) {
            case "bigint":
-                $column = "integer";
+               $type_column =  "integer";
                break;
            case "varchar":
-                $column = "string";
+               $type_column =  "string";
+               break;
+           case "text":
+               $type_column =  "text";
+               break;
+           case "decimal":
+               $type_column =  "number";
+               break;
+           case "int":
+               $type_column =  "integer";
+               break;
+           case "timestamp":
+               $type_column =  "string";
                break;
        }
-       return $column;
+       return $type_column;
 
    }
 
@@ -251,8 +467,7 @@ $swagger_annotations[$k] ='
 
     }
 
-    public function RequestBody($method,$model){
-
+    public function RequestBody($model){
         $m = 'App\Models\\'.$model;
         $model = new $m();
         $table = $model->getTable();
@@ -274,11 +489,11 @@ $swagger_annotations[$k] ='
                  $nline="\n";
              }
 $properties .= '
-    *       @OA\Property(property="'.$column_name.'", type="'.$col_type.'"),'.$nline;
+        *       @OA\Property(property="'.$column_name.'", type="'.$col_type.'"),'.$nline;
         $i++;
         }
 $body .= "
-    *     required={".substr($required , 0, -1)."},"."\n";
+        *     required={".substr($required , 0, -1)."},"."\n";
         $body .=$properties;
 
         $body = preg_replace('/\n\s*\n/', "\n", $body);

@@ -9,7 +9,7 @@
         "api/prods/id/{id}": {
             "get": {
                 "tags": [
-                    "Get Product"
+                    "show Product"
                 ],
                 "summary": "List Product",
                 "description": "List Product",
@@ -32,7 +32,7 @@
             },
             "put": {
                 "tags": [
-                    "Put Product"
+                    "update Product"
                 ],
                 "summary": "Update Product",
                 "description": "Update Product",
@@ -126,7 +126,7 @@
             },
             "delete": {
                 "tags": [
-                    "Delete Product"
+                    "destroy Product"
                 ],
                 "summary": "Delete Product",
                 "description": "Delete Product",
@@ -151,10 +151,10 @@
         "api/prods/id/{id}/edit": {
             "get": {
                 "tags": [
-                    "Get Product"
+                    "edit Product"
                 ],
-                "summary": "Edit Product",
-                "description": "Edit Product",
+                "summary": "List Product",
+                "description": "List Product",
                 "operationId": "ea942bf5932859ef4857e2e0a3c389f6",
                 "parameters": [
                     {
@@ -176,7 +176,7 @@
         "api/altro/{id}/{name}": {
             "get": {
                 "tags": [
-                    "Get Product"
+                    "myMethod Product"
                 ],
                 "summary": "List Product",
                 "description": "List Product",
@@ -192,6 +192,39 @@
                     },
                     {
                         "name": "name",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        },
+        "api/add/product/{id}/{price}": {
+            "post": {
+                "tags": [
+                    "myMethod2 Product"
+                ],
+                "summary": "Product",
+                "description": "Product",
+                "operationId": "2748e38ee1a27936382aeb0b931d5a12",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "price",
                         "in": "path",
                         "required": true,
                         "schema": {

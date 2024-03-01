@@ -17,4 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/info_table',[\App\Http\Controllers\SwaggerController::class,'getColumns']);
+Route::get('/info_table',[\App\Http\Controllers\SwaggerController::class,'generateAnnotations']);
