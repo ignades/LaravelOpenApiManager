@@ -5,236 +5,55 @@
         "description": "This is an example API for users management",
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "http://localhost:8000/"
+        }
+    ],
     "paths": {
-        "api/prods/id/{id}": {
+        "/api/products": {
             "get": {
-                "tags": [
-                    "show Product"
-                ],
-                "summary": "List Product",
-                "description": "List Product",
-                "operationId": "d081523c87d4790d7510585c3c665dd6",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "description": "LIST Product method get",
                 "responses": {
                     "200": {
-                        "description": "successful operation"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "update Product"
-                ],
-                "summary": "Update Product",
-                "description": "Update Product",
-                "operationId": "cf0e4400013fe9369c851319874671ca",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "id",
-                                    "name",
-                                    "description",
-                                    "price",
-                                    "stock",
-                                    "created_at",
-                                    "updated_at"
-                                ],
-                                "properties": {
-                                    "id": {
-                                        "type": "integer"
-                                    },
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "description": {
-                                        "type": "text"
-                                    },
-                                    "price": {
-                                        "type": "number"
-                                    },
-                                    "stock": {
-                                        "type": "integer"
-                                    },
-                                    "created_at": {
-                                        "type": "string"
-                                    },
-                                    "updated_at": {
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        },
-                        "application/json": {
-                            "schema": {}
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Register Successfully",
+                        "description": "Successfully response!",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "$ref": "#/components/schemas/getProducts"
+                                }
                             }
                         }
-                    },
-                    "200": {
-                        "description": "Register Successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "404": {
-                        "description": "Resource Not Found"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "destroy Product"
-                ],
-                "summary": "Delete Product",
-                "description": "Delete Product",
-                "operationId": "c915d8999fb9822dfefdc31aac3366c8",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
                     }
                 }
             }
-        },
-        "api/prods/id/{id}/edit": {
-            "get": {
-                "tags": [
-                    "edit Product"
-                ],
-                "summary": "List Product",
-                "description": "List Product",
-                "operationId": "ea942bf5932859ef4857e2e0a3c389f6",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    }
-                }
-            }
-        },
-        "api/altro/{id}/{name}": {
-            "get": {
-                "tags": [
-                    "myMethod Product"
-                ],
-                "summary": "List Product",
-                "description": "List Product",
-                "operationId": "7c2bbf19ae1b540311e9a77d459d8971",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+        }
+    },
+    "components": {
+        "schemas": {
+            "getProducts": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
                     },
-                    {
-                        "name": "name",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    }
-                }
-            }
-        },
-        "api/add/product/{id}/{price}": {
-            "post": {
-                "tags": [
-                    "myMethod2 Product"
-                ],
-                "summary": "Product",
-                "description": "Product",
-                "operationId": "2748e38ee1a27936382aeb0b931d5a12",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                    "name": {
+                        "type": "string"
                     },
-                    {
-                        "name": "price",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
                     }
                 }
             }

@@ -19,6 +19,29 @@ To work with this Package is essential observe rules
 - Step2 Create Migration Table 
 - Step3 Create Model 
 - Step4 Create Routes with methods or Routes::resource or Routes::apiResource 
+- Step5 Define Path of OpenApi on class Controller extends BaseController
+- 
+````
+/**
+* @OA\Info(
+*     description="This is an example API for users management",
+*     version="1.0.0",
+*     title="User Management API"
+* ),
+* @OA\Get(
+*     path="http://localhost:8000/docs/api-docs.json",
+*     @OA\Response(
+*         response="200",
+*         description="The data"
+*     )
+* )
+*/
+class ProductsController extends Controller
+{
+...
+````
+
+
 
 - Artisan Commands : to add Annotations on your controller you need use command this will generate the Annotations for each Api Method
 
@@ -45,3 +68,4 @@ To work with this Package is essential observe rules
 - |-------- name
 - |-------- price
 - |-------- description
+

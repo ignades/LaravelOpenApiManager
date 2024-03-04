@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Http\Controllers\SwaggerController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Process;
 
 class CreateSwagl5 extends Command
 {
@@ -27,6 +28,10 @@ class CreateSwagl5 extends Command
      */
     public function handle()
     {
+        //Add git changes
+        $id = rand(5, 250000);
+        Process::run('git add .');
+        Process::run('git commit -m "Open Api doc version '.$id.'"');
         $swag = new SwaggerController;
         $res = $swag->generateAnnotations();
         if ($res==="OK"){

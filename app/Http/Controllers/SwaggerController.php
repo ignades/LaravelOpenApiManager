@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Routing\RouteCompiler;
 use App\Models\Product;
 use Symfony\Component\Routing\Route as RouteSymfony;
@@ -12,7 +13,7 @@ use Illuminate\Support\Str;
 
 class SwaggerController extends Controller
 {
-
+    public array $jayParsedAry=array();
     public ?string $ParameterType = null;
     public ?string $MethodDescription = null;
     public ?string $parametro = null;
@@ -33,7 +34,9 @@ class SwaggerController extends Controller
         $routeCollection = collect(Route::getRoutes())->filter(function ($route) {
             return Str::startsWith($route->action['prefix'], 'api');
         });
+
         //dd($routeCollection);
+
         //define array swaggers for each controller
         $array_swagger = array();
 
@@ -49,7 +52,6 @@ class SwaggerController extends Controller
 
             $metodo[$k] = str_replace("@", '', $metodo_cercato);
 
-            //echo $metodo[$k]."<br>";
             $find_controller = explode("\\", $v->action["uses"]);
 
             //Controller
@@ -62,286 +64,224 @@ class SwaggerController extends Controller
             $swagger_annotations[$this->controller]='';
 
             //CRUD Methods
-            $this->crud_method[$k] = ucfirst(strtolower($v->methods()[0]));
+            $this->crud_method[$k] = strtolower($v->methods()[0]);
 
             $this->method = $metodo[$k];
-            $this->methods[$metodo[$k]]["params"] =  $compiledRoute->getVariables();
+
             $this->methods[$metodo[$k]]["crudo"] = $this->crud_method[$k];
+
+            $this->jayParsedAry["openapi"] = $this->apiVersion();
+
+            $this->jayParsedAry["info"] = $this->createInfo();
+
+            $this->jayParsedAry["servers"] = $this->serverInfo();
+
 
             //CRUD index GET
             if($this->method === "index"){
 
-                $stringa = $this->indexAnnotation($this->url,$this->model);
+                $this->url = $v->uri();
 
-                $this->swagger_annotations[$k]=$stringa;
-            }
+                $this->jayParsedAry["paths"] = $this->createPath($this->url,$this->crud_method[$k]);
+                $this->jayParsedAry["components"] = $this->createComponentResponseModel();
+
+             };
 
             //CRUD store POST ******************************************************************
 //            if($this->method === "store"){
-//                if(count($this->methods[$metodo[$k]]["params"]) > 0){
-//                    //create annotation swagger parameters
-//                    //echo "crea Url parameter if exist";
-//                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
-//                        $this->parametro = '
-//        *      @OA\Parameter(
-//        *      in="path",
-//        *      name="' . $v2 . '",
-//        *      required=true,
-//        *      @OA\Schema(type="$v2")
-//        *       ),';
-//                    }
-//                }
+//                //echo $metodo[$k];
+//                $this->url = $v->uri();
+//                $this->jayParsedAry["paths"][] = $this->createPath($this->url,$this->crud_method[$k]);
+//                //$this->jayParsedAry["paths"] =$this->createParameters($this->url,$this->crud_method[$k]);
+//            }
 //
-//                //END Annotation
-//                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->RequestBody($this->model) . $this->endAnnotation();
+//            if($this->method === "create"){
+//                //echo $metodo[$k];
+//                $this->url = $v->uri();
+//                $this->jayParsedAry["paths"][] = $this->createPath($this->url,$this->crud_method[$k]);
 //
-//                $this->swagger_annotations[$k]=$data;
-//                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
 //            }
 
+
+            //echo json_encode($this->jayParsedAry);
 
             //CRUD update PUT/PATCH ******************************************************************
             if($this->method === "update"){
 
-                if(count($this->methods[$metodo[$k]]["params"]) > 0){
-                    //create annotation swagger parameters
-                    //echo "crea Url parameter if exist";
-                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
-                        $this->parametro = '
-        *      @OA\Parameter(
-        *      in="path",
-        *      name="' . $v2 . '",
-        *      required=true,
-        *      @OA\Schema(type="$v2")
-        *       ),';
-                    }
-                }
-
-                //END Annotation
-                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->RequestBody($this->model) . $this->endAnnotation();
-
-                $this->swagger_annotations[$k]=$data;
-                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
             }
-
 
             //CRUD show PUT/PATCH ******************************************************************
             if($this->method === "show"){
 
-                //Start Annotation
-                if(count($this->methods[$metodo[$k]]["params"]) > 0){
-                    //create annotation swagger parameters
-                    //echo "crea Url parameter if exist";
-                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
-                        $this->parametro = '
-        *      @OA\Parameter(
-        *      in="path",
-        *      name="' . $v2 . '",
-        *      required=true,
-        *      @OA\Schema(type="$v2")
-        *       ),';
-
-                    }
-                }
-                //END Annotation
-                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->endAnnotation();
-
-                $this->swagger_annotations[$k]=$data;
-                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
             }
             //CRUD edit POST {id}
             if($this->method === "edit"){
-                //Start Annotation
-                if(count($this->methods[$metodo[$k]]["params"]) > 0){
-                    //create annotation swagger parameters
-                    //echo "crea Url parameter if exist";
-                    foreach($this->methods[$metodo[$k]]["params"] as $v2){
-                        $this->parametro = '
-        *      @OA\Parameter(
-        *      in="path",
-        *      name="' . $v2 . '",
-        *      required=true,
-        *      @OA\Schema(type="$v2")
-        *       ),';
-                    }
-                }
-                //END Annotation
-                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $this->parametro . $this->endAnnotation();
 
-                $this->swagger_annotations[$k]=$data;
-                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
             }
             //CRUD DELETE  {id} ******************************************************************
             if($this->method === "destroy"){
 
-                if(count($this->methods[$this->method]["params"]) > 0){
-                    //create annotation swagger parameters
-                    $parametro='';
-                    //echo "crea Url parameter if exist";
-                    foreach($this->methods[$this->method]["params"] as $v2){
-                        if($this->method !== strtolower($this->model)){
-                            $v2='id';
-                            $this->ParameterType = $this->getColumnType($v2,$this->model);
-                            $parametro .= '
-        *      @OA\Parameter(
-        *      in="path",
-        *      name="'.$v2.'",
-        *      required=true,
-        *      @OA\Schema(type="' . $this->ParameterType . '")
-        *       ),';
-                        }else{
-                            $this->ParameterType = $this->getColumnType($v2,$this->model);
-                            $parametro .= '
-        *      @OA\Parameter(
-        *      in="path",
-        *      name="'.$v2.'",
-        *      required=true,
-        *      @OA\Schema(type="' . $this->ParameterType . '")
-        *       ),';
-                        }
-
-                    }
-                }
-                //END Annotation
-                $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $parametro . $this->endAnnotation();
-
-                $this->swagger_annotations[$k]=$data;
-                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
             }
             // Others personal Methods
             if($this->method !== "index" &&  $this->method !== "create" && $this->method !== "store" && $this->method !== "show" && $this->method !== "edit" && $this->method !== "update" && $this->method !== "destroy")
             {
-                //Start Annotation
-                if(count($this->methods[$this->method]["params"]) > 0){
-                    //create annotation swagger parameters
-                    $parametro='';
-                    //echo "crea Url parameter if exist";
-                    foreach($this->methods[$this->method]["params"] as $v2){
-                        if($this->method !== strtolower($this->model))
-                            $parametro .= '
-        *      @OA\Parameter(
-        *      in="path",
-        *      name="' . $v2 . '",
-        *      required=true,
-        *      @OA\Schema(type="$v2")
-        *       ),';
 
-                    }
-                    //END Annotation
-                    $data = $this->startAnnotation($this->method,$this->crud_method[$k], $this->model,$this->url). $parametro . $this->endAnnotation();
-
-                    $this->swagger_annotations[$k]=$data;
-                }
-                $this->array_swagger[$this->controller][$this->method][$k] = $this->swagger_annotations[$k];
             }
 
          }
 
+        //return $this->jayParsedAry;
 
+        $content =  json_encode($this->jayParsedAry, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);//JSON_PRETTY_PRINT
 
+        $file = '../../storage/api-docs.json';
+        Storage::disk('storage')->put("api-docs.json", $content);
 
+        exit;
+        //file_put_contents($file, $content);
 
-//        $patternx = "/$this->controller/";
-//        if (preg_match($patternx, $v->action["uses"]) == true){
-//            $this->array_swagger[$this->controller][$this->method] = $this->swagger_annotations;
-//        }
-
-        //write
-        //dd($this->array_swagger);
-        //echo json_encode($this->array_swagger);
-
-        $this->write_controllers($this->array_swagger);
 
         return "OK";
     }
 
 
-     public function indexAnnotation($url,$model):string {
-         $stringa = '
-        /**
-        * @OA\Get(
-        *      path="'.$url.'",
-        *      summary="List '.$model.'",
-        *      tags={"show '.$model.'"},
-        *      description="List '.$model.'",
-        *      @OA\Response(
-        *          response=200,
-        *          description="successful operation"
-        *       ),
-        *      @OA\Response(
-        *          response=200,
-        *          description="Register Successfully",
-        *          @OA\JsonContent()
-        *       ),
-        *      @OA\Response(
-        *          response=404,
-        *          description="Result Not Found",
-        *          @OA\JsonContent()
-        *       ),
-        *      @OA\Response(response=400, description="Bad request"),
-        *      @OA\Response(response=404, description="Resource Not Found"),
-        * )
-        */
-        */';
-         return $stringa;
-     }
+    public function apiVersion():string {
 
-    public function startAnnotation($method,$crud_method, $model,$url_api):string{
+        return "3.0.0";
 
-        $this->MethodDescription = $this->methodDescription($crud_method, $model);
-        $start = '
-        /**
-        * @OA\\'.$crud_method.'(
-        *      path="'.$url_api.'",
-        *      summary="'.$this->MethodDescription.'",
-        *      description="'.$method.' ' .$this->MethodDescription.'",
-        *      @OA\Response(
-        *          response=201,
-        *          description="Register Successfully",
-        *          @OA\JsonContent()
-        *       ),';
-        return $start;
     }
 
-    public function endAnnotation():string
-    {
-        $end='
-        *      @OA\Response(
-        *          response=201,
-        *          description="Register Successfully",
-        *          @OA\JsonContent()
-        *       ),
-        *      @OA\Response(
-        *          response=200,
-        *          description="Register Successfully",
-        *          @OA\JsonContent()
-        *       ),
-        *      @OA\Response(
-        *          response=422,
-        *          description="Unprocessable Entity",
-        *          @OA\JsonContent()
-        *       ),
-        *      @OA\Response(response=400, description="Bad request"),
-        *      @OA\Response(response=404, description="Resource Not Found"),
-        * )
-        */
-        ';
-        return $end;
+    public function createInfo() {
+
+        $jayParsedAry["title"] ="User Management API";
+        $jayParsedAry["description"] = "This is an example API for users management";
+        $jayParsedAry["version"] = "1.0.0";
+        return $jayParsedAry;
     }
 
-    public function urlParameter():string {
+    public function serverInfo() {
 
-        //$column_type = $this->getColumnType($this->parametro,$model);
-        $column_type = gettype($this->property);
-        $this->parametro .= '
-        *      @OA\Parameter(
-        *      in="path",
-        *      name="' . $this->property . '",
-        *      required=true,
-        *      @OA\Schema(type="'.$column_type.'")
-        *       ),';
-        return $this->parametro;
+        $jayParsedAry[]["url"]="http://localhost:8000/";
+
+        return $jayParsedAry;
     }
+    /*
+     *         "/url": {
+            "get": {
+                "description": "New endpoint",
+                "responses": {
+                    "200": {
+                        "description": "New response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "": ""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }*/
+    public function createPath($apiUrl,$crud_method){
+
+        $jayParsedAry["/$apiUrl"]["$crud_method"]["description"] = "LIST $this->model method $crud_method";
+
+        $jayParsedAry["/$apiUrl"]["$crud_method"]["responses"]["200"]["description"] = "Successfully response!";
+
+        $jayParsedAry["/$apiUrl"]["$crud_method"]["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/getProducts';
+
+
+
+        //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
+        //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
+
+        return $jayParsedAry;
+    }
+
+    //Json Output parameters index method
+    public function createJsonWaited (){
+
+
+        $jayParsedAry["200"] = ["description"=>"Successful response"];
+
+        $jayParsedAry["content"]["application/json"]["schema"]["type"]="array";
+
+        $jayParsedAry["content"]["application/json"]["schema"]["items"]["type"]="object";
+
+        $jayParsedAry["content"]["application/json"]["schema"]["items"]["required"] = $this->getItemsJson($this->model);
+
+        return $jayParsedAry;
+    }
+
+
+    public function createComponentResponseModel(){
+
+        $jayParsedAry["schemas"]["getProducts"]["type"] ="object";
+
+        $jayParsedAry["schemas"]["getProducts"]["properties"]  = $this->getItemsJson($this->model);
+
+        return $jayParsedAry;
+    }
+
+
+    public function createParameters($apiUrl,$crud_method){
+
+        $jayParsedAry["$apiUrl"]["$crud_method"]["parameters"][] = $this->getColumnModel($this->model);
+
+        return $jayParsedAry;
+    }
+
+    public function getColumnModel($model):array{
+
+        $m = 'App\Models\\'.$model;
+        $model = new $m();
+        $table = $model->getTable();
+        $columns = Schema::getColumnListing($table);
+
+        //Definition of Required Parameters in Body to update Product
+
+        $parameters = array();
+
+        foreach($columns as $k=>$column_name) {
+            $type_column = Schema::getColumnType($table, $column_name);
+            $parameters[$k]["name"] = $column_name;
+            $parameters[$k]["in"] = "path";
+            $parameters[$k]["description"] = "Properties $table";
+            $parameters[$k]["schema"]["type"] = $this->mapDataType($type_column);;
+        }
+
+        return $parameters;
+
+    }
+
+    public function getItemsJson($model):array{
+
+        $m = 'App\Models\\'.$model;
+        $model = new $m();
+        $table = $model->getTable();
+        $columns = Schema::getColumnListing($table);
+
+        //Json response of parameters
+
+        $parameters = array();
+
+        foreach($columns as $k=>$column_name) {
+
+            $type_column = Schema::getColumnType($table, $column_name);
+
+            $parameters[$column_name]["type"] = $this->mapDataType($type_column);
+
+        }
+
+        return $parameters;
+
+    }
+
+
+
+
 
     public function extra_methods($method,$crud_method,$model,$url):string{
         $stringa = '';
@@ -422,23 +362,23 @@ class SwaggerController extends Controller
 
        $column = Schema::getColumnType($table,$parameter);
        switch ($column) {
+           case "int":
            case "bigint":
                $type_column =  "integer";
                break;
+           case "text":
+           case "timestamp":
+           case "date":
+           case "date-time":
+           case "password":
            case "varchar":
                $type_column =  "string";
-               break;
-           case "text":
-               $type_column =  "text";
                break;
            case "decimal":
                $type_column =  "number";
                break;
-           case "int":
-               $type_column =  "integer";
-               break;
-           case "timestamp":
-               $type_column =  "string";
+           case "boolean":
+               $type_column =  "boolean";
                break;
        }
        return $type_column;
@@ -468,62 +408,22 @@ class SwaggerController extends Controller
 
     }
 
-    public function RequestBody($model){
-        $m = 'App\Models\\'.$model;
-        $model = new $m();
-        $table = $model->getTable();
-        $columns = Schema::getColumnListing($table);
-        //var_dump($columns);
-        //Definition of Required Parameters in Body to update Product
-        $required='';
-        $properties='';
-        $body='';
-        $num_cols = count($columns);
-        $nline='';
-        $i=0;
-        foreach($columns as $k=>$column_name){
-
-             $type_column = Schema::getColumnType($table,$column_name);
-             $col_type =  $this->mapDataType($type_column);
-             $required .=  '"'.$column_name.'",';
-             if ($i<$num_cols){
-                 $nline="\n";
-             }
-$properties .= '
-        *       @OA\Property(property="'.$column_name.'", type="'.$col_type.'"),'.$nline;
-        $i++;
-        }
-$body .= "
-        *     required={".substr($required , 0, -1)."},"."\n";
-        $body .=$properties;
-
-        $body = preg_replace('/\n\s*\n/', "\n", $body);
-
-        return $body;
-
-    }
 
     public function mapDataType($column):string {
 
         //Mapping Integration Server Data Types to Swagger Data Types
         switch ($column) {
+            case "int":
             case "bigint":
                 $type_column =  "integer";
                 break;
+            case "text":
+            case "timestamp":
             case "varchar":
                 $type_column =  "string";
                 break;
-            case "text":
-                $type_column =  "text";
-                break;
             case "decimal":
                 $type_column =  "number";
-                break;
-            case "int":
-                $type_column =  "integer";
-                break;
-            case "timestamp":
-                $type_column =  "string";
                 break;
         }
         return $type_column;
