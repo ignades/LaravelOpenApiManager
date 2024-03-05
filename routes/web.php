@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use  Iomanager\Swgenerator\SwaggerManager;
+use Iomanager\Swgenerator\SwagController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,3 +19,7 @@ Route::get('/', function () {
 });
 
 Route::get('/info_table',[\App\Http\Controllers\SwaggerController::class,'generateAnnotations']);
+
+
+Route::get('/IoSwagGen', [SwagController::class,'generateAnnotations']);
+

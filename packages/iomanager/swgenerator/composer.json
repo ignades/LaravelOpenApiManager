@@ -1,0 +1,19 @@
+{
+    "name": "iomanager/swgenerator",
+    "description": "Generate Json file for Swagger OpenApi Documentation",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Iomanager\\Swgenerator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ignacio Sebastian Olivieri",
+            "email": "igna.olivieri@tiscali.it"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
