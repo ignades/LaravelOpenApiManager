@@ -13,17 +13,106 @@
     "paths": {
         "/api/products": {
             "get": {
-                "description": "LIST Product method get",
+                "description": "LIST Product method ",
                 "responses": {
                     "200": {
                         "description": "Successfully response!",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/getProducts"
+                                    "$ref": "#/components/schemas/getProduct"
                                 }
                             }
                         }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Product method postProduct",
+                "operationId": "postProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "price",
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "stock",
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "created_at",
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "updated_at",
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully response!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/postProduct"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "nor found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "419": {
+                        "description": "Page Expired required Token"
                     }
                 }
             }
@@ -31,7 +120,33 @@
     },
     "components": {
         "schemas": {
-            "getProducts": {
+            "getProduct": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "postProduct": {
                 "type": "object",
                 "properties": {
                     "id": {

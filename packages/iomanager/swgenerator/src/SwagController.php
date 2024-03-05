@@ -35,7 +35,7 @@ class SwagController extends Controller {
             return Str::startsWith($route->action['prefix'], 'api');
         });
 
-        dd($routeCollection);
+        //dd($routeCollection);
 
         //define array swaggers for each controller
         $array_swagger = array();
@@ -81,19 +81,21 @@ class SwagController extends Controller {
             if($this->method === "index"){
 
                 $this->url = $v->uri();
+                $componentName = $this->crud_method[$k]."$this->model";
 
-                $this->jayParsedAry["paths"] = $this->createPath($this->url,$this->crud_method[$k]);
-                $this->jayParsedAry["components"] = $this->createComponentResponseModel();
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPath($componentName);
+                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             };
 
             //CRUD store POST ******************************************************************
-//            if($this->method === "store"){
-//                //echo $metodo[$k];
-//                $this->url = $v->uri();
-//                $this->jayParsedAry["paths"][] = $this->createPath($this->url,$this->crud_method[$k]);
-//                //$this->jayParsedAry["paths"] =$this->createParameters($this->url,$this->crud_method[$k]);
-//            }
+            if($this->method === "store"){
+                $componentName = $this->crud_method[$k]."$this->model";
+                $this->url = $v->uri();
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
+                //$this->jayParsedAry["paths"] =$this->createParameters($this->url,$this->crud_method[$k]);
+            }
 //
 //            if($this->method === "create"){
 //                //echo $metodo[$k];
@@ -137,11 +139,11 @@ class SwagController extends Controller {
         $file = '../../storage/api-docs.json';
         Storage::disk('storage')->put("api-docs.json", $content);
 
-        exit;
+
         //file_put_contents($file, $content);
 
 
-        return "OK";
+        return $this->jayParsedAry;
     }
 
 
@@ -165,34 +167,45 @@ class SwagController extends Controller {
 
         return $jayParsedAry;
     }
-    /*
-     *         "/url": {
-            "get": {
-                "description": "New endpoint",
-                "responses": {
-                    "200": {
-                        "description": "New response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "": ""
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }*/
-    public function createPath($apiUrl,$crud_method){
 
-        $jayParsedAry["/$apiUrl"]["$crud_method"]["description"] = "LIST $this->model method $crud_method";
+    public function createPath($componentName){
 
-        $jayParsedAry["/$apiUrl"]["$crud_method"]["responses"]["200"]["description"] = "Successfully response!";
+        $jayParsedAry["description"] = "LIST $this->model method ";
 
-        $jayParsedAry["/$apiUrl"]["$crud_method"]["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/getProducts';
+        $jayParsedAry["responses"]["200"]["description"] = "Successfully response!";
+
+        $jayParsedAry["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
 
 
+        //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
+        //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
+
+        return $jayParsedAry;
+    }
+
+    public function createPathPost($componentName){
+
+        //$jayParsedAry["tags"] = "$componentName";
+
+        $jayParsedAry["summary"] = "$this->model method $componentName";
+
+        $jayParsedAry["operationId"] = "$componentName";
+
+        $jayParsedAry["parameters"] = $this->getColumnModel($this->model);
+
+        $jayParsedAry["responses"]["200"]["description"] = "Successfully response!";
+
+        $jayParsedAry["responses"]["401"]["description"] = "Unauthenticated";
+
+        $jayParsedAry["responses"]["400"]["description"] = "Bad Request";
+
+        $jayParsedAry["responses"]["404"]["description"] = "nor found";
+
+        $jayParsedAry["responses"]["403"]["description"] = "Forbidden";
+
+        $jayParsedAry["responses"]["419"]["description"] = "Page Expired required Token";
+
+        $jayParsedAry["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
 
         //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
         //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
@@ -218,9 +231,9 @@ class SwagController extends Controller {
 
     public function createComponentResponseModel(){
 
-        $jayParsedAry["schemas"]["getProducts"]["type"] ="object";
+        $jayParsedAry["type"] ="object";
 
-        $jayParsedAry["schemas"]["getProducts"]["properties"]  = $this->getItemsJson($this->model);
+        $jayParsedAry["properties"]  = $this->getItemsJson($this->model);
 
         return $jayParsedAry;
     }

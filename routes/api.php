@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductsController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -32,8 +33,9 @@ use App\Http\Controllers\ProductsController;
 //Route::Put('/products/{id}', [ProductsController::class,'update']);
 
  Route::resource('products', ProductsController::class);
+//Route::get('/prod',[ProductsController::class,'store']);
 
 //if you need specify type Route::get('contacts/{id:[0-9]+}', 'ContactController@get_contact'); OR Route::get('contacts/{id:[A-Za-z]+}', 'ContactController@get_contact');
- Route::get('/altro/{id}/{name}', [ProductsController::class,'myMethod']);
+ //Route::get('/altro/{id}/{name}', [ProductsController::class,'myMethod']);
 
- Route::post('/add/product/{id}/{price}', [ProductsController::class,'myMethod2']);
+// Route::post('/add/product/{id}/{price}', [ProductsController::class,'myMethod2']);
