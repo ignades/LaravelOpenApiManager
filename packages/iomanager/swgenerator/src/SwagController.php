@@ -15,7 +15,7 @@ class SwagController extends Controller {
     public array $jayParsedAry=array();
     public ?string $ParameterType = null;
     public ?string $MethodDescription = null;
-    public ?string $parametro = null;
+    public ?string $metodo_cercato = null;
     public ?string $property = null;
     public string $url;
     public array $annotation = [];
@@ -26,6 +26,8 @@ class SwagController extends Controller {
     public ?string $model = null;
     public ?string $controller = null;
     public array $array_swagger=[];
+    public array $routeParameters=[];
+    public array $extraParameters=[];
 
 
     public function generateAnnotations()
@@ -46,16 +48,19 @@ class SwagController extends Controller {
             $this->url = $v->uri();
 
             //Getting Parameters compiled
-            $compiledRoute = RouteCompiler::compile(new RouteSymfony($this->url));
+            $compiledRoute[$k] = RouteCompiler::compile(new RouteSymfony($this->url));
 
-            $metodo_cercato = strpbrk($v->action["uses"], '@');
+            $this->routeParameters = $compiledRoute[$k]->getVariables();
+            $this->extraParameters = $compiledRoute[$k]->getTokens();
 
-            $metodo[$k] = str_replace("@", '', $metodo_cercato);
+            $this->metodo_cercato = strpbrk($v->action["uses"], '@');
+
+            $metodo[$k] = str_replace("@", '',$this->metodo_cercato);
 
             $find_controller = explode("\\", $v->action["uses"]);
 
             //Controller
-            $this->controller = str_replace($metodo_cercato, '', $find_controller[3]);
+            $this->controller = str_replace($this->metodo_cercato, '', $find_controller[3]);
 
             //model
             $this->model = str_replace("sController", '', $this->controller);
@@ -94,9 +99,10 @@ class SwagController extends Controller {
                 $this->url = $v->uri();
                 $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
+
                 //$this->jayParsedAry["paths"] =$this->createParameters($this->url,$this->crud_method[$k]);
             }
-//
+
 //            if($this->method === "create"){
 //                //echo $metodo[$k];
 //                $this->url = $v->uri();
@@ -110,28 +116,75 @@ class SwagController extends Controller {
             //CRUD update PUT/PATCH ******************************************************************
             if($this->method === "update"){
 
+                if(count($this->routeParameters)>0){
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"]=$this->getColumnModel($this->model);
+                }
+
+                $componentName = $this->crud_method[$k]."$this->model";
+                $this->url = $v->uri();
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
+
             }
 
             //CRUD show PUT/PATCH ******************************************************************
             if($this->method === "show"){
+                if(count($this->routeParameters)>0){
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"]=$this->getColumnModel($this->model);
+                }
+
+                $componentName = $this->crud_method[$k]."$this->model";
+                $this->url = $v->uri();
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             }
             //CRUD edit POST {id}
             if($this->method === "edit"){
+                if(count($this->routeParameters)>0){
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"]=$this->getColumnModel($this->model);
+                }
+
+                $componentName = $this->crud_method[$k]."$this->model";
+                $this->url = $v->uri();
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             }
             //CRUD DELETE  {id} ******************************************************************
             if($this->method === "destroy"){
+                if(count($this->routeParameters)>0){
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"]=$this->getColumnModel($this->model);
+                }
+
+                $componentName = $this->crud_method[$k]."$this->model";
+                $this->url = $v->uri();
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             }
             // Others personal Methods
             if($this->method !== "index" &&  $this->method !== "create" && $this->method !== "store" && $this->method !== "show" && $this->method !== "edit" && $this->method !== "update" && $this->method !== "destroy")
             {
+                $componentName = $this->crud_method[$k].str_replace("@","",$this->metodo_cercato);
+                $this->url = $v->uri();
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathExtraPost($componentName);
+                //Intercept extra parameters
+                if(count($this->routeParameters)>0){
+
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"] = $this->checkParameters($this->model,$this->routeParameters);
+
+                }
+                $this->jayParsedAry["components"]["schemas"][$componentName]["type"]="object";
+                $allParameters[]=$this->componentExtraParameters($this->model,$this->routeParameters);
+                foreach ($allParameters as $kk =>$parameter){
+                    $this->jayParsedAry["components"]["schemas"][$componentName]["properties"]=$parameter;
+                }
 
             }
 
         }
-
+        //dd($allParameters);
         //return $this->jayParsedAry;
 
         $content =  json_encode($this->jayParsedAry, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);//JSON_PRETTY_PRINT
@@ -213,6 +266,37 @@ class SwagController extends Controller {
         return $jayParsedAry;
     }
 
+    public function createPathExtraPost($componentName){
+
+        //$jayParsedAry["tags"] = "$componentName";
+
+        $jayParsedAry["summary"] = "$this->model method $componentName";
+
+        $jayParsedAry["operationId"] = "$componentName";
+
+        $jayParsedAry["parameters"] = $this->componentExtraParameters($this->model,$this->routeParameters);
+
+        $jayParsedAry["responses"]["200"]["description"] = "Successfully response!";
+
+        $jayParsedAry["responses"]["401"]["description"] = "Unauthenticated";
+
+        $jayParsedAry["responses"]["400"]["description"] = "Bad Request";
+
+        $jayParsedAry["responses"]["404"]["description"] = "nor found";
+
+        $jayParsedAry["responses"]["403"]["description"] = "Forbidden";
+
+        $jayParsedAry["responses"]["419"]["description"] = "Page Expired required Token";
+
+        $jayParsedAry["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
+
+        //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
+        //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
+
+        return $jayParsedAry;
+    }
+
+
     //Json Output parameters index method
     public function createJsonWaited (){
 
@@ -229,21 +313,102 @@ class SwagController extends Controller {
     }
 
 
+
     public function createComponentResponseModel(){
 
         $jayParsedAry["type"] ="object";
-
         $jayParsedAry["properties"]  = $this->getItemsJson($this->model);
 
         return $jayParsedAry;
     }
 
 
-    public function createParameters($apiUrl,$crud_method){
 
-        $jayParsedAry["$apiUrl"]["$crud_method"]["parameters"][] = $this->getColumnModel($this->model);
+    public function checkParameters($model,$parameters){
+        $m = 'App\Models\\'.$model;
+        $model = new $m();
+        $table = $model->getTable();
+        $columns = Schema::getColumnListing($table);
+        //dd($columns);
+        $array_parameters = array();
+        //dd($parameters);
+        foreach ($parameters as $k => $parameter){
+            //if is exatra parameter not present in model add this to
+            $i=1;
+            if(array_search($parameter, $columns)===false){
 
-        return $jayParsedAry;
+                $strig=$this->extraParameters[0][1];
+                $clean = str_replace("?","",$strig);
+                $clean = str_replace("&","",$clean);
+                $params = explode('type=',$clean);
+
+                unset($params[0]);
+                if($k==0){
+                    $vvalore[$k]=$k+1;
+                    $type[$k] = $params[$vvalore[$k]];
+                }else{
+                    $type[$k] = $params[$k];
+                }
+
+                $array_parameters[$k]["name"] = $parameter;
+                $array_parameters[$k]["required"] = true;
+                $array_parameters[$k]["in"] = "path";
+                $array_parameters[$k]["description"] = "Properties $table";
+                $array_parameters[$k]["schema"]["type"] =$type[$k];
+            }
+            if(array_search($parameter, $columns)!==false){
+
+                $type_column = Schema::getColumnType($table, $parameter);
+                $array_parameters[$k]["name"] = $parameter;
+                $array_parameters[$k]["required"] = true;
+                $array_parameters[$k]["in"] = "path";
+                $array_parameters[$k]["description"] = "Properties $table";
+                $array_parameters[$k]["schema"]["type"] = $this->mapDataType($type_column);
+            }
+
+
+        }
+
+        return $array_parameters;
+    }
+
+    public function componentExtraParameters($model,$parameters)
+    {
+        $m = 'App\Models\\' . $model;
+        $model = new $m();
+        $table = $model->getTable();
+        $columns = Schema::getColumnListing($table);
+        //dd($columns);
+        $array_parameters = array();
+        //dd($parameters);
+        foreach ($parameters as $k => $parameter) {
+            //if is exatra parameter not present in model add this to
+            $i = 1;
+            if (array_search($parameter, $columns) === false) {
+
+                $strig = $this->extraParameters[0][1];
+                $clean = str_replace("?", "", $strig);
+                $clean = str_replace("&", "", $clean);
+                $params = explode('type=', $clean);
+
+                unset($params[0]);
+                if ($k == 0) {
+                    $vvalore[$k] = $k + 1;
+                    $type[$k] = $params[$vvalore[$k]];
+                } else {
+                    $type[$k] = $params[$k];
+                }
+
+                $array_parameters[$parameter]["type"] = $type[$k];
+            }
+            if (array_search($parameter, $columns) !== false) {
+
+                $type_column = Schema::getColumnType($table, $parameter);
+                $array_parameters[$parameter]["type"] = $this->mapDataType($type_column);
+            }
+
+        }
+        return $array_parameters;
     }
 
     public function getColumnModel($model):array{
@@ -254,12 +419,12 @@ class SwagController extends Controller {
         $columns = Schema::getColumnListing($table);
 
         //Definition of Required Parameters in Body to update Product
-
         $parameters = array();
 
         foreach($columns as $k=>$column_name) {
             $type_column = Schema::getColumnType($table, $column_name);
             $parameters[$k]["name"] = $column_name;
+            $parameters[$k]["required"] = true;
             $parameters[$k]["in"] = "path";
             $parameters[$k]["description"] = "Properties $table";
             $parameters[$k]["schema"]["type"] = $this->mapDataType($type_column);;
@@ -277,94 +442,16 @@ class SwagController extends Controller {
         $columns = Schema::getColumnListing($table);
 
         //Json response of parameters
-
         $parameters = array();
 
         foreach($columns as $k=>$column_name) {
 
             $type_column = Schema::getColumnType($table, $column_name);
-
+            $parameters[$column_name]["required"] = true;
             $parameters[$column_name]["type"] = $this->mapDataType($type_column);
 
         }
-
         return $parameters;
-
-    }
-
-
-
-
-
-    public function extra_methods($method,$crud_method,$model,$url):string{
-        $stringa = '';
-        //Start Annotation
-        $stringa .= $this->startAnnotation($method,$crud_method, $model,$url);
-
-        if(count($this->methods[$method]["params"]) > 0){
-            //create annotation swagger parameters
-            //echo "crea Url parameter if exist";
-            foreach($this->methods[$method]["params"] as $v2){
-                $this->property = $v2;
-                $stringa .= $this->urlParameter($this->model);
-            }
-        }
-        //END Annotation
-        $stringa .= $this->endAnnotation();
-        return $stringa;
-    }
-
-    public function write_controllers($array_swagger){
-
-        foreach ($array_swagger as $k =>$v){
-
-            //Create new file with annotations $k = controller
-            $filename = dirname(__FILE__).'/'.$k.'.php';
-
-            if(!file_exists($filename)){
-                //create file
-                $f = fopen($filename, 'wb');
-                if (!$f) {
-                    die('Error creating the file ' . $filename);
-                }
-                fclose($f);
-            }
-
-            //copy original on new cleaning comments
-
-            $current = file_get_contents("$k.php", true);
-            $data = preg_replace('!/\*.*?\*/!s', '', $current);
-            $data = preg_replace('/\n\s*\n/', "\n", $data);
-            file_put_contents($filename, $data);
-
-            foreach ($v as $k2=>$annotation){
-                //metodo $k2;
-
-                $search      = "$k2";
-                $line_number = false;
-
-                if ($handle = fopen(dirname(__FILE__).'/'.$k.'.php', "r")) {
-                    $count = 0;
-                    while (($line = fgets($handle, 4096)) !== FALSE and !$line_number) {
-                        $count++;
-                        $line_number = (strpos($line, $search) !== FALSE) ? $count : $line_number;
-                    }
-                    fclose($handle);
-                }
-
-                //write here on $line_number
-
-                $filepathname = dirname(__FILE__).'/'.$k.'.php';
-
-                $stats = file(dirname(__FILE__).'/'.$k.'.php', FILE_IGNORE_NEW_LINES);
-                $offset = $line_number;
-                $valore = $array_swagger[$k][$k2];
-                array_splice($stats, $offset-1, 0, $valore);
-                file_put_contents($filepathname, join("\n", $stats));
-
-            }
-        }
-
     }
 
     public function getColumnType($parameter,$model):string
@@ -376,6 +463,8 @@ class SwagController extends Controller {
         $column = Schema::getColumnType($table,$parameter);
         switch ($column) {
             case "int":
+                $type_column =  "integer";
+                break;
             case "bigint":
                 $type_column =  "integer";
                 break;
@@ -427,6 +516,8 @@ class SwagController extends Controller {
         //Mapping Integration Server Data Types to Swagger Data Types
         switch ($column) {
             case "int":
+                $type_column =  "integer";
+                break;
             case "bigint":
                 $type_column =  "integer";
                 break;

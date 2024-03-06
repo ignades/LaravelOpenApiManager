@@ -18,11 +18,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//Route::get('/prod',[\App\Http\Controllers\ProductsController::class,'index']);
-
-
-//Route::get('/info_table',[\App\Http\Controllers\SwaggerController::class,'generateAnnotations']);
-
-
 Route::get('/IoSwagGen', [SwagController::class,'generateAnnotations']);
 

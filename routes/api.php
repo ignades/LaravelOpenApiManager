@@ -20,17 +20,6 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-//Route::get('/clients/{id}', [\App\Http\Controllers\ClientsController::class,'show']);
-//
-//Route::post('/comune', [\App\Http\Controllers\ClientsController::class,'searchCity']);
-//
-
-//Route::apiResource("products", ProductsController::class)
-//    ->parameters(['id' => 'id_product'])
-//    ->only(['show','store','update']);
-
-//Route::Post('/products/{id}', [ProductsController::class,'show']);
-//Route::Put('/products/{id}', [ProductsController::class,'update']);
 
  Route::resource('products', ProductsController::class);
 //Route::get('/prod',[ProductsController::class,'store']);
@@ -38,4 +27,4 @@ use Illuminate\Support\Facades\Route;
 //if you need specify type Route::get('contacts/{id:[0-9]+}', 'ContactController@get_contact'); OR Route::get('contacts/{id:[A-Za-z]+}', 'ContactController@get_contact');
  //Route::get('/altro/{id}/{name}', [ProductsController::class,'myMethod']);
 
-// Route::post('/add/product/{id}/{price}', [ProductsController::class,'myMethod2']);
+ Route::post('/add/product/{id_prod}/{price}/{extra}?type=integer&type=string', [ProductsController::class,'myMethod2']);
