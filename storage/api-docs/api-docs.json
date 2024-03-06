@@ -1,9 +1,9 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "User Management API",
-        "description": "This is an example API for users management",
-        "version": "1.0.0"
+        "title": "IoManager for Swagger",
+        "description": "Producer of Api Documentation",
+        "version": "1.0.1"
     },
     "servers": [
         {
@@ -28,6 +28,9 @@
                 }
             },
             "post": {
+                "tags": [
+                    "postProduct"
+                ],
                 "summary": "Product method postProduct",
                 "operationId": "postProduct",
                 "parameters": [
@@ -126,8 +129,11 @@
         },
         "/api/products/{product}": {
             "get": {
-                "summary": "Product method getProduct",
-                "operationId": "getProduct",
+                "tags": [
+                    "getProductById"
+                ],
+                "summary": "Product method getProductById",
+                "operationId": "getProductById",
                 "parameters": [
                     {
                         "name": "id",
@@ -137,60 +143,6 @@
                         "schema": {
                             "type": "integer"
                         }
-                    },
-                    {
-                        "name": "name",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "description",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "price",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "name": "stock",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "created_at",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "updated_at",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 ],
                 "responses": {
@@ -199,7 +151,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/getProduct"
+                                    "$ref": "#/components/schemas/getProductById"
                                 }
                             }
                         }
@@ -222,6 +174,9 @@
                 }
             },
             "put": {
+                "tags": [
+                    "putProduct"
+                ],
                 "summary": "Product method putProduct",
                 "operationId": "putProduct",
                 "parameters": [
@@ -318,6 +273,9 @@
                 }
             },
             "delete": {
+                "tags": [
+                    "deleteProduct"
+                ],
                 "summary": "Product method deleteProduct",
                 "operationId": "deleteProduct",
                 "parameters": [
@@ -416,8 +374,11 @@
         },
         "/api/products/{product}/edit": {
             "get": {
-                "summary": "Product method getProduct",
-                "operationId": "getProduct",
+                "tags": [
+                    "getProductEdit"
+                ],
+                "summary": "Product method getProductEdit",
+                "operationId": "getProductEdit",
                 "parameters": [
                     {
                         "name": "id",
@@ -427,60 +388,6 @@
                         "schema": {
                             "type": "integer"
                         }
-                    },
-                    {
-                        "name": "name",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "description",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "price",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "name": "stock",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "created_at",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "updated_at",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 ],
                 "responses": {
@@ -489,7 +396,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/getProduct"
+                                    "$ref": "#/components/schemas/getProductEdit"
                                 }
                             }
                         }
@@ -581,31 +488,24 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "required": true,
                         "type": "integer"
                     },
                     "name": {
-                        "required": true,
                         "type": "string"
                     },
                     "description": {
-                        "required": true,
                         "type": "string"
                     },
                     "price": {
-                        "required": true,
                         "type": "number"
                     },
                     "stock": {
-                        "required": true,
                         "type": "integer"
                     },
                     "created_at": {
-                        "required": true,
                         "type": "string"
                     },
                     "updated_at": {
-                        "required": true,
                         "type": "string"
                     }
                 }
@@ -614,31 +514,76 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "required": true,
                         "type": "integer"
                     },
                     "name": {
-                        "required": true,
                         "type": "string"
                     },
                     "description": {
-                        "required": true,
                         "type": "string"
                     },
                     "price": {
-                        "required": true,
                         "type": "number"
                     },
                     "stock": {
-                        "required": true,
                         "type": "integer"
                     },
                     "created_at": {
-                        "required": true,
                         "type": "string"
                     },
                     "updated_at": {
-                        "required": true,
+                        "type": "string"
+                    }
+                }
+            },
+            "getProductById": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "getProductEdit": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
                         "type": "string"
                     }
                 }
@@ -647,31 +592,24 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "required": true,
                         "type": "integer"
                     },
                     "name": {
-                        "required": true,
                         "type": "string"
                     },
                     "description": {
-                        "required": true,
                         "type": "string"
                     },
                     "price": {
-                        "required": true,
                         "type": "number"
                     },
                     "stock": {
-                        "required": true,
                         "type": "integer"
                     },
                     "created_at": {
-                        "required": true,
                         "type": "string"
                     },
                     "updated_at": {
-                        "required": true,
                         "type": "string"
                     }
                 }
@@ -680,31 +618,24 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "required": true,
                         "type": "integer"
                     },
                     "name": {
-                        "required": true,
                         "type": "string"
                     },
                     "description": {
-                        "required": true,
                         "type": "string"
                     },
                     "price": {
-                        "required": true,
                         "type": "number"
                     },
                     "stock": {
-                        "required": true,
                         "type": "integer"
                     },
                     "created_at": {
-                        "required": true,
                         "type": "string"
                     },
                     "updated_at": {
-                        "required": true,
                         "type": "string"
                     }
                 }

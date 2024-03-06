@@ -13,19 +13,23 @@ use Illuminate\Support\Str;
 class SwagController extends Controller {
 
     public array $jayParsedAry=array();
-    public ?string $ParameterType = null;
-    public ?string $MethodDescription = null;
     public ?string $metodo_cercato = null;
+
     public ?string $property = null;
+
     public string $url;
+
     public array $annotation = [];
+
     public array $methods = [];
     public array $crud_methods = [];
-    public array $swagger_annotations = [];
+
+    public string $crud_method ;
+
     public ?string $method = null;
     public ?string $model = null;
+
     public ?string $controller = null;
-    public array $array_swagger=[];
     public array $routeParameters=[];
     public array $extraParameters=[];
 
@@ -69,11 +73,13 @@ class SwagController extends Controller {
             $swagger_annotations[$this->controller]='';
 
             //CRUD Methods
-            $this->crud_method[$k] = strtolower($v->methods()[0]);
+            $this->crud_methods[$k] = strtolower($v->methods()[0]);
+
+            $this->crud_method = strtolower($v->methods()[0]);
 
             $this->method = $metodo[$k];
 
-            $this->methods[$metodo[$k]]["crudo"] = $this->crud_method[$k];
+            $this->methods[$metodo[$k]]["crudo"] = $this->crud_methods[$k];
 
             $this->jayParsedAry["openapi"] = $this->apiVersion();
 
@@ -86,93 +92,82 @@ class SwagController extends Controller {
             if($this->method === "index"){
 
                 $this->url = $v->uri();
-                $componentName = $this->crud_method[$k]."$this->model";
-
-                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPath($componentName);
+                $componentName = $this->crud_methods[$k]."$this->model";
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPath($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             };
 
             //CRUD store POST ******************************************************************
             if($this->method === "store"){
-                $componentName = $this->crud_method[$k]."$this->model";
+                $componentName = $this->crud_methods[$k]."$this->model";
                 $this->url = $v->uri();
-                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
-                //$this->jayParsedAry["paths"] =$this->createParameters($this->url,$this->crud_method[$k]);
             }
 
-//            if($this->method === "create"){
-//                //echo $metodo[$k];
-//                $this->url = $v->uri();
-//                $this->jayParsedAry["paths"][] = $this->createPath($this->url,$this->crud_method[$k]);
-//
-//            }
-
-
-            //echo json_encode($this->jayParsedAry);
+            //***Not necessary this return blade view with input parameters
+            //if($this->method === "create"){
+            //}
 
             //CRUD update PUT/PATCH ******************************************************************
             if($this->method === "update"){
 
                 if(count($this->routeParameters)>0){
-                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"]=$this->getColumnModel($this->model);
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
                 }
 
-                $componentName = $this->crud_method[$k]."$this->model";
+                $componentName = $this->crud_methods[$k]."$this->model";
                 $this->url = $v->uri();
-                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             }
 
             //CRUD show PUT/PATCH ******************************************************************
             if($this->method === "show"){
-                if(count($this->routeParameters)>0){
-                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"]=$this->getColumnModel($this->model);
-                }
 
-                $componentName = $this->crud_method[$k]."$this->model";
+                $componentName = $this->crud_methods[$k]."$this->model"."ById";
                 $this->url = $v->uri();
-                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             }
             //CRUD edit POST {id}
             if($this->method === "edit"){
                 if(count($this->routeParameters)>0){
-                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"]=$this->getColumnModel($this->model);
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
                 }
 
-                $componentName = $this->crud_method[$k]."$this->model";
+                $componentName = $this->crud_methods[$k]."$this->model"."Edit";
                 $this->url = $v->uri();
-                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             }
             //CRUD DELETE  {id} ******************************************************************
             if($this->method === "destroy"){
                 if(count($this->routeParameters)>0){
-                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"]=$this->getColumnModel($this->model);
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
                 }
 
-                $componentName = $this->crud_method[$k]."$this->model";
+                $componentName = $this->crud_methods[$k]."$this->model";
                 $this->url = $v->uri();
-                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             }
             // Others personal Methods
             if($this->method !== "index" &&  $this->method !== "create" && $this->method !== "store" && $this->method !== "show" && $this->method !== "edit" && $this->method !== "update" && $this->method !== "destroy")
             {
-                $componentName = $this->crud_method[$k].str_replace("@","",$this->metodo_cercato);
+                $componentName = $this->crud_methods[$k].str_replace("@","",$this->metodo_cercato);
                 $this->url = $v->uri();
-                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]] = $this->createPathExtraPost($componentName);
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathExtraPost($componentName);
                 //Intercept extra parameters
                 if(count($this->routeParameters)>0){
 
-                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_method[$k]]["parameters"] = $this->checkParameters($this->model,$this->routeParameters);
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"] = $this->checkParameters($this->model,$this->routeParameters);
 
                 }
                 $this->jayParsedAry["components"]["schemas"][$componentName]["type"]="object";
@@ -185,16 +180,11 @@ class SwagController extends Controller {
 
         }
         //dd($allParameters);
-        //return $this->jayParsedAry;
 
         $content =  json_encode($this->jayParsedAry, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);//JSON_PRETTY_PRINT
 
         $file = '../../storage/api-docs.json';
         Storage::disk('storage')->put("api-docs.json", $content);
-
-
-        //file_put_contents($file, $content);
-
 
         return $this->jayParsedAry;
     }
@@ -208,9 +198,9 @@ class SwagController extends Controller {
 
     public function createInfo() {
 
-        $jayParsedAry["title"] ="User Management API";
-        $jayParsedAry["description"] = "This is an example API for users management";
-        $jayParsedAry["version"] = "1.0.0";
+        $jayParsedAry["title"] ="IoManager for Swagger";
+        $jayParsedAry["description"] = "Producer of Api Documentation";
+        $jayParsedAry["version"] = "1.0.1";
         return $jayParsedAry;
     }
 
@@ -238,13 +228,22 @@ class SwagController extends Controller {
 
     public function createPathPost($componentName){
 
-        //$jayParsedAry["tags"] = "$componentName";
+        $jayParsedAry["tags"][] = $componentName;
 
         $jayParsedAry["summary"] = "$this->model method $componentName";
 
         $jayParsedAry["operationId"] = "$componentName";
 
-        $jayParsedAry["parameters"] = $this->getColumnModel($this->model);
+        if($this->method === "show"){
+
+            $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
+
+        }
+        elseif($this->method === "edit"){
+            $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
+        }else{
+            $jayParsedAry["parameters"] = $this->getColumnModel($this->model);
+        }
 
         $jayParsedAry["responses"]["200"]["description"] = "Successfully response!";
 
@@ -259,9 +258,6 @@ class SwagController extends Controller {
         $jayParsedAry["responses"]["419"]["description"] = "Page Expired required Token";
 
         $jayParsedAry["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
-
-        //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
-        //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
 
         return $jayParsedAry;
     }
@@ -290,39 +286,17 @@ class SwagController extends Controller {
 
         $jayParsedAry["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
 
-        //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
-        //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
-
         return $jayParsedAry;
     }
-
-
-    //Json Output parameters index method
-    public function createJsonWaited (){
-
-
-        $jayParsedAry["200"] = ["description"=>"Successful response"];
-
-        $jayParsedAry["content"]["application/json"]["schema"]["type"]="array";
-
-        $jayParsedAry["content"]["application/json"]["schema"]["items"]["type"]="object";
-
-        $jayParsedAry["content"]["application/json"]["schema"]["items"]["required"] = $this->getItemsJson($this->model);
-
-        return $jayParsedAry;
-    }
-
-
 
     public function createComponentResponseModel(){
 
         $jayParsedAry["type"] ="object";
+
         $jayParsedAry["properties"]  = $this->getItemsJson($this->model);
 
         return $jayParsedAry;
     }
-
-
 
     public function checkParameters($model,$parameters){
         $m = 'App\Models\\'.$model;
@@ -408,6 +382,7 @@ class SwagController extends Controller {
             }
 
         }
+
         return $array_parameters;
     }
 
@@ -417,7 +392,6 @@ class SwagController extends Controller {
         $model = new $m();
         $table = $model->getTable();
         $columns = Schema::getColumnListing($table);
-
         //Definition of Required Parameters in Body to update Product
         $parameters = array();
 
@@ -431,7 +405,25 @@ class SwagController extends Controller {
         }
 
         return $parameters;
+    }
 
+    public function getSingleColumnModel($model,$column):array{
+
+        $m = 'App\Models\\'.$model;
+        $model = new $m();
+        $table = $model->getTable();
+        $columns = Schema::getColumnListing($table);
+        //Definition of Required Parameters in Body to update Product
+        $parameters = array();
+
+        $type_column = Schema::getColumnType($table, $column);
+        $parameters["name"] = $column;
+        $parameters["required"] = true;
+        $parameters["in"] = "path";
+        $parameters["description"] = "Properties $table";
+        $parameters["schema"]["type"] = $this->mapDataType($type_column);;
+
+        return $parameters;
     }
 
     public function getItemsJson($model):array{
@@ -447,7 +439,7 @@ class SwagController extends Controller {
         foreach($columns as $k=>$column_name) {
 
             $type_column = Schema::getColumnType($table, $column_name);
-            $parameters[$column_name]["required"] = true;
+            //$parameters[$column_name]["required"] = true;
             $parameters[$column_name]["type"] = $this->mapDataType($type_column);
 
         }
@@ -462,10 +454,8 @@ class SwagController extends Controller {
 
         $column = Schema::getColumnType($table,$parameter);
         switch ($column) {
-            case "int":
-                $type_column =  "integer";
-                break;
             case "bigint":
+            case "int":
                 $type_column =  "integer";
                 break;
             case "text":
@@ -510,15 +500,12 @@ class SwagController extends Controller {
 
     }
 
-
     public function mapDataType($column):string {
 
         //Mapping Integration Server Data Types to Swagger Data Types
         switch ($column) {
-            case "int":
-                $type_column =  "integer";
-                break;
             case "bigint":
+            case "int":
                 $type_column =  "integer";
                 break;
             case "text":
@@ -531,9 +518,6 @@ class SwagController extends Controller {
                 break;
         }
         return $type_column;
-
     }
-
-
 
 }

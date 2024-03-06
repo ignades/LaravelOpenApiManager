@@ -8,9 +8,9 @@ use Illuminate\Routing\Controller as BaseController;
 //fix error  Required @OA\PathItem() not found  --->path="http://localhost:8000/docs/api-docs.json"
 /**
  * @OA\Info(
- *     description="This is an example API for users management",
- *     version="1.0.0",
- *     title="User Management API"
+ *     description="Producer of Api Documentation",
+ *     version="1.0.1",
+ *     title="IoManager for Swagger"
  * ),
  * @OA\Get(
  *     path="http://localhost:8000/docs/api-docs.json",
