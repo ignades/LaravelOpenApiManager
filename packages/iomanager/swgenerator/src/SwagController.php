@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Routing\RouteCompiler;
-use App\Models\Product;
 use Symfony\Component\Routing\Route as RouteSymfony;
 use Illuminate\Support\Str;
 
@@ -241,7 +240,11 @@ class SwagController extends Controller {
         }
         elseif($this->method === "edit"){
             $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
-        }else{
+        }
+        elseif($this->method === "destroy"){
+            $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
+        }
+        else{
             $jayParsedAry["parameters"] = $this->getColumnModel($this->model);
         }
 

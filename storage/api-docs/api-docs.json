@@ -287,60 +287,6 @@
                         "schema": {
                             "type": "integer"
                         }
-                    },
-                    {
-                        "name": "name",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "description",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "price",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "name": "stock",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "created_at",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "updated_at",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 ],
                 "responses": {
