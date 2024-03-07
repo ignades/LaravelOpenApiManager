@@ -1,6 +1,6 @@
 ## Install package in Laravel 
 ````
-composer require iomanager/swgenerator
+composer require iomanager/swgenerator:dev-main
 ````
 ## About LaravelOpenApiManager Author:Ignacio Sebastian Olivieri first version  27/02/2024
 
