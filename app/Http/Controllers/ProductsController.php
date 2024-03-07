@@ -4,6 +4,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductCollection;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Throwable;
 
 class ProductsController extends Controller
 {
@@ -19,6 +20,7 @@ class ProductsController extends Controller
 
     public function store(StoreProductRequest $request)
     {
+
          $product =  Product::create($request->validated());
          return response()->json($product);
     }
@@ -33,16 +35,35 @@ class ProductsController extends Controller
     {
         //
     }
-    public function update(UpdateProductRequest $request, string $id,Product $product)
+    public function update(UpdateProductRequest $request, string $id)
     {
-        $product->update($request->validated());
-        return response()->json($product);
+        try {
+            $product = Product:: where('id', $id)->first();
+            $product->update($request->validated());
+        }catch (\Exception $exception) {
+            return response()->json([
+                'errors' => $exception->getMessage()
+            ], 500);
+        }
+
+
+        return response()->json( ["status"=>200,"product"=>$product],201);
     }
 
     public function destroy(string $id)
     {
-        $product = Product::where('id',$id)->deleted();
-        return response()->json($product);
+        try {
+            $product = Product::destroy($id);
+
+        }catch (Throwable $exception){
+
+            return response()->json(['error' => $exception->getMessage()],404);
+        }
+        if($product==0)
+            return response()->json(['error' => "Product Not Found"],404);
+
+        return response()->json(['success' => $product],201);
+
     }
 
 

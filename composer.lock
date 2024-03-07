@@ -1207,12 +1207,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ignades/IoManager.git",
-                "reference": "c9d3dd03647779c5b7335ea10185e3e1f1e5da32"
+                "reference": "febbc3a1b70ce5f114127031335185eb4658e452"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ignades/IoManager/zipball/c9d3dd03647779c5b7335ea10185e3e1f1e5da32",
-                "reference": "c9d3dd03647779c5b7335ea10185e3e1f1e5da32",
+                "url": "https://api.github.com/repos/ignades/IoManager/zipball/febbc3a1b70ce5f114127031335185eb4658e452",
+                "reference": "febbc3a1b70ce5f114127031335185eb4658e452",
                 "shasum": ""
             },
             "default-branch": true,
@@ -1237,7 +1237,7 @@
                 "issues": "https://github.com/ignades/IoManager/issues",
                 "source": "https://github.com/ignades/IoManager/tree/main"
             },
-            "time": "2024-03-07T00:43:14+00:00"
+            "time": "2024-03-07T07:54:30+00:00"
         },
         {
             "name": "laravel/framework",

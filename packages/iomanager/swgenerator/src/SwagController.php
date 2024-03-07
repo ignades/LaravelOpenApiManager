@@ -133,18 +133,18 @@ class SwagController extends Controller {
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             }
-            //CRUD edit POST {id}
-            if($this->method === "edit"){
-                if(count($this->routeParameters)>0){
-                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
-                }
-
-                $componentName = $this->crud_methods[$k]."$this->model"."Edit";
-                $this->url = $v->uri();
-                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
-                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
-
-            }
+            //CRUD edit POST {id} Not necessary this return blade view with input parameters
+//            if($this->method === "edit"){
+//                if(count($this->routeParameters)>0){
+//                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
+//                }
+//
+//                $componentName = $this->crud_methods[$k]."$this->model"."Edit";
+//                $this->url = $v->uri();
+//                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
+//                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
+//
+//            }
             //CRUD DELETE  {id} ******************************************************************
             if($this->method === "destroy"){
                 if(count($this->routeParameters)>0){
@@ -218,10 +218,6 @@ class SwagController extends Controller {
 
         $jayParsedAry["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
 
-
-        //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
-        //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
-
         return $jayParsedAry;
     }
 
@@ -237,9 +233,6 @@ class SwagController extends Controller {
 
             $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
 
-        }
-        elseif($this->method === "edit"){
-            $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
         }
         elseif($this->method === "destroy"){
             $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
@@ -406,7 +399,7 @@ class SwagController extends Controller {
             $parameters[$k]["description"] = "Properties $table";
             $parameters[$k]["schema"]["type"] = $this->mapDataType($type_column);;
         }
-
+        dd($parameters);
         return $parameters;
     }
 
