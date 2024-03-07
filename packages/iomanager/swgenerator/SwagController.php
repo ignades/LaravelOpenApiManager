@@ -185,7 +185,7 @@ class SwagController extends Controller {
         $file = '../../storage/api-docs.json';
         Storage::disk('storage')->put("api-docs.json", $content);
 
-        return $this->jayParsedAry;
+        return "OK";
     }
 
 
@@ -222,7 +222,7 @@ class SwagController extends Controller {
         //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
         //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
 
-        return $jayParsedAry;
+        //return "OK";
     }
 
     public function createPathPost($componentName){

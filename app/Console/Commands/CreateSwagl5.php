@@ -7,6 +7,7 @@ use Iomanager\Swgenerator\SwagController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Process;
 use L5Swagger\Http\Controllers\SwaggerController;
+use function Laravel\Prompts\info;
 
 class CreateSwagl5 extends Command
 {
@@ -29,18 +30,18 @@ class CreateSwagl5 extends Command
      */
     public function handle()
     {
-        //Add git changes
-        $id = rand(5, 250000);
-        Process::run('git add .');
-        Process::run('git commit -m "Open Api doc version '.$id.'"');
+
         $swag = new SwagController;
         $res = $swag->generateAnnotations();
         if ($res==="OK"){
-            $this->info('Annotation created successful!');
-            //REGENERATE JSON
-            Artisan::call('l5-swagger:generate');
+            //Add git changes
+            $id = rand(5, 250000);
+            Process::run('git add .');
+            Process::run('git commit -m "Open Api doc version '.$id.'"');
+            $this->info('The json file was generated!');
         }else{
-            $this->info('Annotation NOT created!');
+            $this->info('JSON NOT created!') ;
         }
+
     }
 }

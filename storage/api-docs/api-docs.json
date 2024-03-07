@@ -1,0 +1,605 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "IoManager for Swagger",
+        "description": "Producer of Api Documentation",
+        "version": "1.0.1"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/"
+        }
+    ],
+    "paths": {
+        "/api/products": {
+            "get": {
+                "description": "LIST Product method ",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getProduct"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "postProduct"
+                ],
+                "summary": "Product method postProduct",
+                "operationId": "postProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "price",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "stock",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "created_at",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "updated_at",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully response!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/postProduct"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "nor found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "419": {
+                        "description": "Page Expired required Token"
+                    }
+                }
+            }
+        },
+        "/api/products/{product}": {
+            "get": {
+                "tags": [
+                    "getProductById"
+                ],
+                "summary": "Product method getProductById",
+                "operationId": "getProductById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully response!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getProductById"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "nor found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "419": {
+                        "description": "Page Expired required Token"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "putProduct"
+                ],
+                "summary": "Product method putProduct",
+                "operationId": "putProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "price",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "stock",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "created_at",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "updated_at",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully response!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/putProduct"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "nor found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "419": {
+                        "description": "Page Expired required Token"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "deleteProduct"
+                ],
+                "summary": "Product method deleteProduct",
+                "operationId": "deleteProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully response!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/deleteProduct"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "nor found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "419": {
+                        "description": "Page Expired required Token"
+                    }
+                }
+            }
+        },
+        "/api/products/{product}/edit": {
+            "get": {
+                "tags": [
+                    "getProductEdit"
+                ],
+                "summary": "Product method getProductEdit",
+                "operationId": "getProductEdit",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully response!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getProductEdit"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "nor found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "419": {
+                        "description": "Page Expired required Token"
+                    }
+                }
+            }
+        },
+        "/api/add/product/{id_prod}/{price}/{extra}?type=integer&type=string": {
+            "post": {
+                "summary": "Product method postmyMethod2",
+                "operationId": "postmyMethod2",
+                "parameters": [
+                    {
+                        "name": "id_prod",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "price",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "extra",
+                        "required": true,
+                        "in": "path",
+                        "description": "Properties products",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully response!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/postmyMethod2"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "nor found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "419": {
+                        "description": "Page Expired required Token"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "getProduct": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "postProduct": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "getProductById": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "getProductEdit": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "putProduct": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "deleteProduct": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "postmyMethod2": {
+                "type": "object",
+                "properties": {
+                    "id_prod": {
+                        "type": "integer"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "extra": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
