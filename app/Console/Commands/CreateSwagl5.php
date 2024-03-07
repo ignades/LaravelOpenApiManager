@@ -3,9 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Http\Controllers\SwaggerController;
+use Iomanager\Swgenerator\SwagController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Process;
+use L5Swagger\Http\Controllers\SwaggerController;
 
 class CreateSwagl5 extends Command
 {
@@ -32,7 +33,7 @@ class CreateSwagl5 extends Command
         $id = rand(5, 250000);
         Process::run('git add .');
         Process::run('git commit -m "Open Api doc version '.$id.'"');
-        $swag = new SwaggerController;
+        $swag = new SwagController;
         $res = $swag->generateAnnotations();
         if ($res==="OK"){
             $this->info('Annotation created successful!');
