@@ -36,8 +36,9 @@ class CreateSwagl5 extends Command
         if ($res==="OK"){
             //Add git changes
             $id = rand(5, 250000);
-            shell_exec('git add .');
-            shell_exec('git commit -m "Open Api doc version '.$id.'"');
+            Process::run('git add .');
+            Process::run('git commit -m "Open Api doc version '.$id.'"');
+            Process::run('git push');
             $this->info('The json file was generated!');
         }else{
             $this->info('JSON NOT created!') ;
