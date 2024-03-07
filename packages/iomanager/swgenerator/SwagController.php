@@ -179,7 +179,6 @@ class SwagController extends Controller {
 
         }
         //dd($allParameters);
-
         $content =  json_encode($this->jayParsedAry, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);//JSON_PRETTY_PRINT
 
         $file = '../../storage/api-docs.json';
