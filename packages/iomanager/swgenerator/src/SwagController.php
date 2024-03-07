@@ -113,12 +113,13 @@ class SwagController extends Controller {
             //CRUD update PUT/PATCH ******************************************************************
             if($this->method === "update"){
 
-                if(count($this->routeParameters)>0){
-                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
-                }
+//                if(count($this->routeParameters)>0){
+//                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
+//                }
 
                 $componentName = $this->crud_methods[$k]."$this->model";
-                $this->url = $v->uri();
+                $number = rand(1,10);
+                $this->url = str_replace("{product}",$number,$v->uri());
                 $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
@@ -128,19 +129,22 @@ class SwagController extends Controller {
             if($this->method === "show"){
 
                 $componentName = $this->crud_methods[$k]."$this->model"."ById";
-                $this->url = $v->uri();
+                $number = rand(0,10);
+                $this->url = str_replace("{product}",$number,$v->uri());
+
                 $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
             }
-            //CRUD edit POST {id} Not necessary this return blade view with input parameters
+            //CRUD edit POST {id}
 //            if($this->method === "edit"){
 //                if(count($this->routeParameters)>0){
 //                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
 //                }
 //
 //                $componentName = $this->crud_methods[$k]."$this->model"."Edit";
-//                $this->url = $v->uri();
+//                $number = rand(0,10);
+//                $this->url = str_replace("{product}",$number,$v->uri());
 //                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
 //                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 //
@@ -152,7 +156,8 @@ class SwagController extends Controller {
                 }
 
                 $componentName = $this->crud_methods[$k]."$this->model";
-                $this->url = $v->uri();
+                $number = rand(1,10);
+                $this->url = str_replace("{product}",$number,$v->uri());
                 $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
                 $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
 
@@ -179,7 +184,7 @@ class SwagController extends Controller {
 
         }
         //dd($allParameters);
-
+        //return json_encode($this->jayParsedAry,JSON_PRETTY_PRINT);
         $content =  json_encode($this->jayParsedAry, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);//JSON_PRETTY_PRINT
 
         $file = '../../storage/api-docs.json';
@@ -218,6 +223,10 @@ class SwagController extends Controller {
 
         $jayParsedAry["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
 
+
+        //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
+        //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
+
         return $jayParsedAry;
     }
 
@@ -230,16 +239,36 @@ class SwagController extends Controller {
         $jayParsedAry["operationId"] = "$componentName";
 
         if($this->method === "show"){
-
+            // $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
+        }
+        elseif($this->method === "edit"){
             $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
-
         }
         elseif($this->method === "destroy"){
-            $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
+            // $jayParsedAry["parameters"][] = $this->getSingleColumnModel($this->model,"id");
+        }
+        elseif($this->method =="store"){
+            /**
+             * "requestBody": {
+             * "content": {
+             * "application/json": {
+             * "schema": {
+             * "$ref": "#/components/schemas/postProduct"
+             * }
+             * }
+             * }
+             * },
+             */
+            $jayParsedAry["requestBody"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
+        } elseif( $this->method =="update"){
+
+            $jayParsedAry["requestBody"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
         }
         else{
             $jayParsedAry["parameters"] = $this->getColumnModel($this->model);
+            $jayParsedAry["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
         }
+
 
         $jayParsedAry["responses"]["200"]["description"] = "Successfully response!";
 
@@ -253,7 +282,8 @@ class SwagController extends Controller {
 
         $jayParsedAry["responses"]["419"]["description"] = "Page Expired required Token";
 
-        $jayParsedAry["responses"]["200"]["content"]["application/json"]["schema"]['$ref'] = '#/components/schemas/'.$componentName;
+
+
 
         return $jayParsedAry;
     }
@@ -388,18 +418,33 @@ class SwagController extends Controller {
         $model = new $m();
         $table = $model->getTable();
         $columns = Schema::getColumnListing($table);
+        //dd($columns);
+        if($this->method=="store"){
+            unset($columns[0]);
+        }
+        $key = array_search('created_at',$columns);
+        $key2 = array_search('updated_at',$columns);
+        if($key !== false){
+            unset($columns[$key]);
+        }
+        if($key2 !== false){
+            unset($columns[$key2]);
+        }
+
         //Definition of Required Parameters in Body to update Product
         $parameters = array();
-
+        $i=0;
         foreach($columns as $k=>$column_name) {
             $type_column = Schema::getColumnType($table, $column_name);
-            $parameters[$k]["name"] = $column_name;
-            $parameters[$k]["required"] = true;
-            $parameters[$k]["in"] = "path";
-            $parameters[$k]["description"] = "Properties $table";
-            $parameters[$k]["schema"]["type"] = $this->mapDataType($type_column);;
+            $parameters[$i]["name"] = $column_name;
+            $parameters[$i]["required"] = true;
+            $parameters[$i]["in"] = "path";
+            $parameters[$i]["description"] = "Properties $table";
+            $parameters[$i]["schema"]["type"] = $this->mapDataType($type_column);
+            $i++;
         }
-        dd($parameters);
+
+        //dd($parameters);
         return $parameters;
     }
 
@@ -410,6 +455,17 @@ class SwagController extends Controller {
         $table = $model->getTable();
         $columns = Schema::getColumnListing($table);
         //Definition of Required Parameters in Body to update Product
+        if($this->method=="store"){
+            unset($columns[0]);
+        }
+        $key = array_search('created_at',$columns);
+        $key2 = array_search('updated_at',$columns);
+        if($key !== false){
+            unset($columns[$key]);
+        }
+        if($key2 !== false){
+            unset($columns[$key2]);
+        }
         $parameters = array();
 
         $type_column = Schema::getColumnType($table, $column);
@@ -428,6 +484,17 @@ class SwagController extends Controller {
         $model = new $m();
         $table = $model->getTable();
         $columns = Schema::getColumnListing($table);
+        if($this->method=="store" || $this->method=="update" ){
+            unset($columns[0]);
+        }
+        $key = array_search('created_at',$columns);
+        $key2 = array_search('updated_at',$columns);
+        if($key !== false){
+            unset($columns[$key]);
+        }
+        if($key2 !== false){
+            unset($columns[$key2]);
+        }
 
         //Json response of parameters
         $parameters = array();
