@@ -43,13 +43,55 @@ class ProductsController extends Controller
 {
 ...
 ````
+## Step 6 Create Artisan Command
+````
+namespace App\Console\Commands;
 
+use Illuminate\Console\Command;
+use Iomanager\Swgenerator\SwagController;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Process;
+use L5Swagger\Http\Controllers\SwaggerController;
+use function Laravel\Prompts\info;
 
+class CreateSwagl5 extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'app:create-swagl5';
 
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'This command create the Annotations Open Api 3.0 on all Controllers from API routes';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+
+        $swag = new SwagController;
+        $res = $swag->generateAnnotations();
+        if ($res==="OK"){
+            $this->info('The json file was generated!');
+        }else{
+            $this->info('JSON NOT created!') ;
+        }
+
+    }
+}
+````
+- After the creation of all method in YourController you can run the next command 
 - Artisan Commands : to add Annotations on your controller you need use command this will generate the Annotations for each Api Method
-
-- php artisan app:create-swagl5
-
+````
+php artisan app:create-swagl5
+````
 - Thi documentation and code is under Construction actually work but need more Parameters this will be do from me ;).
 - Mandatory : The parameters passed from Url as follow 
 - 
@@ -73,5 +115,14 @@ class ProductsController extends Controller
 - |-------- description
 
 ## Extra Parameters in personal route
-- Example route tha isn't a Resource but a new route with personal parameters this route specify a new method on the Controller of your interes to the first parameter {id_prod} corresponding the first type equal to next parameters .. second=&type=string for example. 
--  Route::post('/add/product/{id_prod}/{price}/{extra}?type=integer&type=string', [ProductsController::class,'myMethod2']);
+- Example route tha isn't a Resource but a new route with personal parameters this route specify a new method on the Controller of your interes to the first 
+- 
+- parameter {id_prod} corresponding the first type equal to next parameters .. second=&type=string for example. 
+-  
+```` 
+Route::post('/add/product/{id_prod}/{price}/{extra}?type=integer&type=string', [ProductsController::class,'myMethod2']);
+````
+## Image Example
+
+![alt text](https://github.com/ignades/IoManager/blob/main/Types.jpg?raw=true)
+

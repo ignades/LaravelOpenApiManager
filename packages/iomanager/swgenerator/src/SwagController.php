@@ -33,7 +33,7 @@ class SwagController extends Controller {
     public array $extraParameters=[];
 
 
-    public function generateAnnotations()
+    public function generateAnnotations():string
     {
 
         $routeCollection = collect(Route::getRoutes())->filter(function ($route) {
@@ -134,17 +134,17 @@ class SwagController extends Controller {
 
             }
             //CRUD edit POST {id}
-//            if($this->method === "edit"){
-//                if(count($this->routeParameters)>0){
-//                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
-//                }
-//
-//                $componentName = $this->crud_methods[$k]."$this->model"."Edit";
-//                $this->url = $v->uri();
-//                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
-//                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
-//
-//            }
+            if($this->method === "edit"){
+                if(count($this->routeParameters)>0){
+                    $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]]["parameters"]=$this->getColumnModel($this->model);
+                }
+
+                $componentName = $this->crud_methods[$k]."$this->model"."Edit";
+                $this->url = $v->uri();
+                $this->jayParsedAry["paths"]["/$this->url"][$this->crud_methods[$k]] = $this->createPathPost($componentName);
+                $this->jayParsedAry["components"]["schemas"][$componentName] = $this->createComponentResponseModel();
+
+            }
             //CRUD DELETE  {id} ******************************************************************
             if($this->method === "destroy"){
                 if(count($this->routeParameters)>0){
@@ -179,6 +179,7 @@ class SwagController extends Controller {
 
         }
         //dd($allParameters);
+
         $content =  json_encode($this->jayParsedAry, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);//JSON_PRETTY_PRINT
 
         $file = '../../storage/api-docs.json';
@@ -221,7 +222,7 @@ class SwagController extends Controller {
         //$jayParsedAry["/api/register"]["post"]["requestBody"]['$ref'] = "#/components/schemas/Article";
         //$jayParsedAry["/api/register"]["post"]["responses"] = $this->createResponsesJoson();
 
-        //return "OK";
+        return $jayParsedAry;
     }
 
     public function createPathPost($componentName){
