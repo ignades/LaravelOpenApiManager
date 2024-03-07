@@ -62,12 +62,18 @@ class ProductsController extends Controller
         if($product==0)
             return response()->json(['error' => "Product Not Found"],404);
 
-        return response()->json(['success' => $product],201);
+        return response()->json(['success' => true],201);
 
     }
 
 
-    public function myMethod2(Request $request,$parameters){
+    public function myMethod2(string $stock){
+
+        $product = Product::where('stock',$stock)->get();
+        if(count($product)==0)
+            return response()->json(['error' => "Product Not Found"],404);
+
+        return response()->json(['success' => $product],201);
     }
 
 

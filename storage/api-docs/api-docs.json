@@ -64,7 +64,7 @@
                 }
             }
         },
-        "/api/products/1": {
+        "/api/products/10": {
             "get": {
                 "tags": [
                     "getProductById"
@@ -91,9 +91,36 @@
                         "description": "Page Expired required Token"
                     }
                 }
+            },
+            "delete": {
+                "tags": [
+                    "deleteProduct"
+                ],
+                "summary": "Product method deleteProduct",
+                "operationId": "deleteProduct",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response!"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "nor found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "419": {
+                        "description": "Page Expired required Token"
+                    }
+                }
             }
         },
-        "/api/products/5": {
+        "/api/products/4": {
             "put": {
                 "tags": [
                     "putProduct"
@@ -131,45 +158,11 @@
                 }
             }
         },
-        "/api/products/{product}": {
-            "delete": {
+        "/api/getProduct/{stock}": {
+            "get": {
+                "summary": "Product method getmyMethod2",
+                "operationId": "getmyMethod2",
                 "parameters": [
-                    {
-                        "name": "id",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "name",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "description",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "price",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
                     {
                         "name": "stock",
                         "required": true,
@@ -179,70 +172,6 @@
                             "type": "integer"
                         }
                     }
-                ]
-            }
-        },
-        "/api/products/9": {
-            "delete": {
-                "tags": [
-                    "deleteProduct"
-                ],
-                "summary": "Product method deleteProduct",
-                "operationId": "deleteProduct",
-                "responses": {
-                    "200": {
-                        "description": "Successfully response!"
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "404": {
-                        "description": "nor found"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "419": {
-                        "description": "Page Expired required Token"
-                    }
-                }
-            }
-        },
-        "/api/add/product/{id_prod}/{price}/{extra}?type=integer&type=string": {
-            "post": {
-                "summary": "Product method postmyMethod2",
-                "operationId": "postmyMethod2",
-                "parameters": [
-                    {
-                        "name": "id_prod",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "price",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "name": "extra",
-                        "required": true,
-                        "in": "path",
-                        "description": "Properties products",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -250,7 +179,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/postmyMethod2"
+                                    "$ref": "#/components/schemas/getmyMethod2"
                                 }
                             }
                         }
@@ -370,17 +299,11 @@
                     }
                 }
             },
-            "postmyMethod2": {
+            "getmyMethod2": {
                 "type": "object",
                 "properties": {
-                    "id_prod": {
+                    "stock": {
                         "type": "integer"
-                    },
-                    "price": {
-                        "type": "number"
-                    },
-                    "extra": {
-                        "type": "string"
                     }
                 }
             }

@@ -27,4 +27,11 @@ use Illuminate\Support\Facades\Route;
 //if you need specify type Route::get('contacts/{id:[0-9]+}', 'ContactController@get_contact'); OR Route::get('contacts/{id:[A-Za-z]+}', 'ContactController@get_contact');
  //Route::get('/altro/{id}/{name}', [ProductsController::class,'myMethod']);
 
- Route::post('/add/product/{id_prod}/{price}/{extra}?type=integer&type=string', [ProductsController::class,'myMethod2']);
+ //Route::get('/getProduct/{stock}', [ProductsController::class,'myMethod2']);
+
+Route::get('/getProduct/{stock}/',[ProductsController::class,'myMethod2']);
+
+/* Generate a route with a query string using the route() function */
+
+
+
